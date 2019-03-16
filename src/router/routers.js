@@ -51,14 +51,15 @@ export default [
       icon:'ios-cog'
     },
     children:[
-      { path: 'user',meta:{icon: 'md-people', title: '用户管理111',access: ['system:user:list']}, name: 'system_user', component: () => import('@/view/system/user') },
-      { path: 'person-stalker',meta:{icon: 'md-body',title: '角色管理111',}, name: 'system_role', component: () => import('@/view/system/role') },
-      { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理111',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
-      { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志111',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
+      { path: 'user',meta:{icon: 'md-people', title: '用户管理',access: ['system:user:list']}, name: 'system_user', component: () => import('@/view/system/user') },
+      { path: 'person-stalker',meta:{icon: 'md-body',title: '角色管理',}, name: 'system_role', component: () => import('@/view/system/role') },
+      { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
+      { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
+      { path: 'dictionary',meta:{icon: 'md-bookmarks',title: '字典定义',access: ['system:dictionary:list']}, name: 'system_dictionary', component: () => import('@/view/system/dictionary') },      
     ]
   },
   {
-    path: '/app',
+    path: '/app/activity',
     name: 'act',
     component: Main,
     meta: {
@@ -66,10 +67,33 @@ export default [
       icon:'ios-cog'
     },
     children:[
-      { path: 'activity',meta:{icon: 'ios-contacts-outline', title: '活动管理',access: ['app:activity:list']}, name: 'system_user', component: () => import('@/view/app/activity') },
-      { path: 'person-stalker',meta:{icon: 'md-body',title: '角色管理111',}, name: 'system_role', component: () => import('@/view/system/role') },
-      { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理111',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
-      { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志111',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
+      { 
+        path: 'manage',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '活动管理',
+          access: ['activity:list']
+        }, 
+        name: 'activity_manage', component: () => import('@/view/app/activity/manage.vue') 
+      },
+      { 
+        path: 'add',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '活动创建',
+          access: ['activity:add']
+        }, 
+        name: 'activity_add', component: () => import('@/view/app/activity/add.vue') 
+      },
+      { 
+        path: 'cancel',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '回收站',
+          access: ['activity:list']
+        }, 
+        name: 'activity_cancel', component: () => import('@/view/app/activity/cancel.vue') 
+      }
     ]
   },
   {

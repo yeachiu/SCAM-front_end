@@ -46,7 +46,7 @@
 <script>
     import dayjs from 'dayjs'
     import { post } from '@/libs/axios-cfg'
-    import AddActivity from './components/add.vue'
+    import AddActivity from './add.vue'
     import UpdateActivity from './components/update.vue'
     /** 活动状态 **/
     let ACT_STATUS_DRAFT = 0;   //草稿

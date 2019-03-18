@@ -56,6 +56,7 @@ export default [
       { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
       { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
       { path: 'dictionary',meta:{icon: 'md-bookmarks',title: '字典定义',access: ['system:dictionary:list']}, name: 'system_dictionary', component: () => import('@/view/system/dictionary') },      
+      { path: 'group',meta:{icon: 'md-bookmarks',title: '分组管理',access: ['group:list']}, name: 'group', component: () => import('@/view/app/group') },      
     ]
   },
   {
@@ -93,6 +94,26 @@ export default [
           access: ['activity:list']
         }, 
         name: 'activity_cancel', component: () => import('@/view/app/activity/cancel.vue') 
+      }
+    ]
+  },
+  {
+    path: '/app',
+    name: 'app',
+    component: Main,
+    meta: {
+      title: '应用管理',
+      icon:'ios-cog'
+    },
+    children:[
+      { 
+        path: 'group',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '分组管理',
+          access: ['group:list']
+        }, 
+        name: 'group', component: () => import('@/view/app/group/index.vue') 
       }
     ]
   },

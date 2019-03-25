@@ -7,14 +7,14 @@
       </p>
       <div>
         <template>
-          <!-- <Row>
+          <Row>
               <Col span="15"  class="margin-bottom-10">
                   <Button type="info" @click="openAddModal(null)"><Icon type="md-add"></Icon>&nbsp;添加分组</Button>
                   <Button :disabled="setting.loading" type="success" @click="getData"><Icon type="md-refresh"></Icon>&nbsp;刷新数据</Button>
               </Col>
-          </Row> -->
-          <!-- <Table :columns="columns" :data="datas">
-            <template slot-scope="{ row, index }" slot="name">
+          </Row> 
+           <Table :columns="columns" :data="datas">
+            <!-- <template slot-scope="{ row, index }" slot="name">
               <Input type="text" v-model="editName" v-if="editIndex === index" />
               <span v-else>{{ row.name }}</span>
             </template>
@@ -36,19 +36,19 @@
                 <Button @click="handleEdit(row, index)" size="small">操作</Button>
                 <Button @click="handleRemove(action.row.id)" size="small" type="error" >删除</Button>
               </div>
-            </template>
-          </Table> -->
+            </template> -->
+          </Table>
         </template>
       </div>
     </Card>
-    <Modal v-model="modal.show" :title="添加分组" @on-ok="addOK"
+    <Modal v-model="modal.show" :title="modal.title" @on-ok="addOK"
           :mask-closable="false">
       <Form :model="modal.data" :label-width="80">
         <FormItem label="名称">
           <Input v-model.trim="modal.data.name"></Input>
         </FormItem>
         <FormItem label="所属学院专业">
-          <Input v-model.trim="modal.data.dictName"></Input>
+          <Select v-model.trim="modal.data.dictName"></Select>
         </FormItem>
         <FormItem label="年级">
           <InputNumber :max="2900" :min="1900" v-model.trim="modal.data.period"></InputNumber>
@@ -86,30 +86,84 @@
         datas: [],
         columns: [
             {
-              label:'ID',
-              solt:'id'
+              title:'ID',
+              key:'id'
             },
             {
-              label:'分组名称',
-              solt:'name'
+              title:'分组名称',
+              key:'name',
+              render: (h, params) => {
+                if(editIndex === index){
+                  return h('div', [
+                    h('strong', params.row.name),
+                    h(Input,{
+                      props: {type: 'text',value:this.editName},
+                      on: { Input: (value) => { this.editName = value }}
+                    })
+                  ]);
+                }else{
+                  return h('div', [
+                    h('strong', params.row.name)
+                  ]);
+                }
+              }
             },
             {
-              label:'所属学院',
-              solt:'dictName'
+              title:'所属学院',
+              key:'dictName',
+              sortable: true
             },
             {
-              label:'年级',
-              solt:'period'
+              title:'年级',
+              key:'period',
+              sortable: true
             },
             {
-              label:'班级',
-              solt:'whatClass'
-            }
+              title:'班级',
+              key:'whatClass',
+            },
+            {
+              title: '操作',
+              key: 'action',
+              width: 150,
+              align: 'center',
+              render: (h, params) => {
+                return h('div', [
+                  // h('Button', {
+                    //   props: {
+                    //     type: 'primary',
+                    //     size: 'small'
+                    //   },
+                    //   style: {
+                    //     marginRight: '5px'
+                    //   },
+                    //   on: {
+                    //     click: () => {
+                    //       this.show(params.index)
+                    //     }
+                    //   }
+                  // }, '编辑'),
+                  h('Button', {
+                    props: {
+                      type: 'error',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.handleRemove(params.id)
+                      }
+                    }
+                  }, 'Delete')
+                ]);
+              }
+          }
         ],
         editIndex:-1, // 当前聚焦的输入框的行数
         editName: '',
+        dictNames:[],
         modal:{
           show:false,
+          title:'添加分组',
           data:{
             id:'',
             name:'',
@@ -128,8 +182,12 @@
         async getData(){
             this.setting.loading = true;
             try {
-                let res = await post('/app/group/list')
-                this.datas = res.data;
+                let res1 = await post('/app/group/list')
+                this.datas = res1.data;
+                let res2 = await post('app/dictionary/listByCode/{dictCode}',null,{
+                  dictCode:'INSTITUTE'
+                })
+                this.dictNames = res2.data;
             } catch (error) {
                 this.$throw(error)
             }
@@ -194,13 +252,13 @@
             this.removeModal = false;
         },
         openAddModal(parent=null){
-            this.modal.data = {
-              id:row.id,
-              name:row.name,
-              dictName:row.dictName,
-              period:row.period,
-              whatClass:row.whatClass
-            }
+            // this.modal.data = {
+            //   id:'',
+            //   name:'',
+            //   dictName:'',
+            //   period:dayjs().year(),
+            //   whatClass:0
+            // }
             console.log(this.modal.data)
             this.modal.show = true;
         },

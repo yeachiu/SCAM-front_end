@@ -8,6 +8,10 @@ import iView from 'iview'
 import config from '@/config'
 import importDirective from '@/directive'
 import cascaderMulti from "cascader-multi";
+//iviewUI
+import formCreate from 'form-create'
+//获取生成器
+import { maker } from 'form-create'
 import 'iview/dist/styles/iview.css'
 import './index.less'
 import '@/assets/icons/iconfont.css'
@@ -18,7 +22,9 @@ import './libs/iview-cfg'
 // 实际打包时应该不引入mock
 /* eslint-disable */
 if (process.env.NODE_ENV !== 'production') require('@/mock')
-Vue.use(cascaderMulti);
+
+Vue.use(formCreate);
+// Vue.use(cascaderMulti);
 Vue.use(iView)
 Vue.config.productionTip = false
 /**

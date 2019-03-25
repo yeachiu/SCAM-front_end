@@ -65,7 +65,7 @@
         <Tag v-for="item in formItem.groupId" :key="item.title" closable @on-close="handleClose">{{item.title}}</Tag>
       </FormItem>  
     </Form>
-    <SelectGroup v-if="selectGroupModal" :apartmentId="apartmentId" v-on:checkedNodes="getNodes" @cancel="onModalCancel"></SelectGroup>  
+    <SelectGroup v-if="selectGroupModal" :apartmentId="apartmentId" :checkeds="formItem.groupId" v-on:checkedNodes="getNodes" @cancel="onModalCancel"></SelectGroup>  
   </div>
 </template>
 <script>
@@ -328,6 +328,12 @@ export default {
       const index = this.formItem.groupId.indexOf(name);
       this.formItem.groupId.splice(index, 1);
     }
+  },
+  mounted(){
+    this.$on('submitBaseData',()=>{
+      console.log("老爹，base知道啦");
+      this.$emit("submitData",this.formItem);
+    })
   }
 }
 </script>

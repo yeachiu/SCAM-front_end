@@ -21,44 +21,68 @@ export default {
               {
                   title: 'parent 1',
                   expand: true,
-                  selected: true,
+                  selected: false,
                   children: [
                       {
                           title: 'parent 1-1',
-                          expand: true,
+                          selected: false,
                           children: [
                               {
-                                  title: 'leaf 1-1-1'
+                                  title: 'leaf 1-1-1',
+                                  selected: false,
                               },
                               {
-                                  title: 'leaf 1-1-2'
+                                  title: 'leaf 1-1-2',
+                                  selected: false,
                               }
                           ]
                       },
                       {
                           title: 'parent 1-2',
-                          expand: true,
                           children: [
                               {
                                   title: 'leaf 1-2-1',
-                                  checked: true
+                                  selected: false,
                               },
                               {
-                                  title: 'leaf 1-2-1'
+                                  title: 'leaf 1-2-2',
+                                  selected: false,
                               }
                           ]
                       }
                   ]
+              },
+              {
+                title:'部门分组',
+                expand: true,
+                children:[
+                    {
+                        id:'123456',
+                        title:'group01',
+                    },
+                    {
+                        id:'223456',
+                        title:'group02'
+                    },
+                    {
+                        id:'323456',
+                        title:'group03'
+                    }
+                ]
               }
             ],
       checkedNodes: []
     };
   },
   props: {
-    apartmentId:String
+    apartmentId:String,
+    checkeds:Array
   },
   created(){
-      this.getData();
+    // this.getData();
+    let checkeds = this.checkeds;
+    this.checkedNodeSync(checkeds,this.datas)
+        
   },
   methods: {
     async getdata(){
@@ -77,6 +101,20 @@ export default {
         }
         this.loading = false;
     },
+    checkedNodeSync(checkeds,datas){
+        if(checkeds!=null && checkeds.length>0){      
+            datas.forEach(r => {
+                checkeds.forEach(c => {
+                    if(c.title== r.title){
+                        r.checked = true;
+                    }
+                });
+                if(r.children!=null && r.children.length>0){
+                    this.checkedNodeSync(checkeds,r.children)
+                }
+            });        
+        }
+      },
     /**
      * @description 关闭Modal
      */

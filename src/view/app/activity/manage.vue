@@ -9,7 +9,7 @@
                 <template>
                     <Row>
                         <Col span="15">
-                            <Button type="info" @click="openAddModal(null)"><Icon type="md-add"></Icon>&nbsp;创建活动</Button>
+                            <Button type="info" to="./add"><Icon type="md-add"></Icon>&nbsp;创建活动</Button>
                             <Button :disabled="setting.loading" type="success" @click="getData"><Icon type="md-refresh"></Icon>&nbsp;刷新数据</Button>
                             <Button type="primary" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>&nbsp;导出表格</Button>
                         </Col>
@@ -20,13 +20,13 @@
                         </Col>
                     </Row>
                     <Table ref="table"  class="margin-bottom-10"
-                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data.records"></Table>
+                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data"></Table>
                     <Page :total="data.total" class="tr" @on-change="pageChange" :current.sync="data.current" :page-size="data.size"
                       @on-page-size-change="pageSizeChange" show-elevator show-sizer></Page>
                 </template>
             </div>
         </Card>
-        <Modal v-model="removeModal" width="360">
+        <!-- <Modal v-model="removeModal" width="360">
             <p slot="header" style="color:#f60;text-align:center">
                 <Icon type="information-circled"></Icon>
                 <span>提示</span>
@@ -38,7 +38,7 @@
                 <Button type="error" size="large" long :loading="setting.loading" @click="removeUser">确认删除</Button>
             </div>
         </Modal>
-        <AddActivity v-if="addActivityModal" :roles="roles" @cancel="onModalCancel"/>
+        <AddActivity v-if="addActivityModal" :roles="roles" @cancel="onModalCancel"/> -->
         <UpdateActivity v-if="updateActivityModal" :roles="roles" :uid="updateUserId" @cancel="onModalCancel"/>
       
     </div>
@@ -217,7 +217,7 @@
             this.$Message.destroy();
             this.$Message.success(req_msg);
             if(currentStatus == ACT_STATUS_CANCEL){
-              this.data.records.splice(this.removeObject.index,1);
+              // this.data.records.splice(this.removeObject.index,1);
             }else{//currentStatus == ACT_STATUS_PUBLISH
               obj.status = ACT_STATUS_PUBLISH;
             }

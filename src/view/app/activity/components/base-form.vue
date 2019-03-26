@@ -13,12 +13,14 @@
           <Icon type="ios-camera" size="20"></Icon>
         </div>
         <Upload
-          v-model="formItem.picture"
+          v-model="picture"
           ref="upload"
           :show-upload-list="false"
           :before-upload="handleUpload"
+          :on-success="uploadSuccess"
           type="drag"
-          action=""
+          action="http://localhost:1000/upload"
+          name="file"
           style="display: inline-block;width:158px;">
           <div style="width: 158px;height:40px;line-height: 40px;">
             <span>上传活动封面</span>
@@ -88,7 +90,7 @@ export default {
     };
     return{
       formItem: {
-        picture: null,
+        pictureUrl: '',
         title: '',
         description: '',
         datetimeSignup: [],
@@ -113,6 +115,7 @@ export default {
           {required:true,validator:validateDate, trigger:'blur'}                    
         ]
       },
+      picture:{},
       uploadImg: {},
       showBigImg: false,
       loading: false,
@@ -257,9 +260,7 @@ export default {
         desc: '文件 ' + file.name + ' 太大，不能超过 2M。',
       });
     },
-    /**
-     * 文件上传前执行的方法
-     */
+    /* 文件上传前执行的方法 */
     handleUpload(file) {
       //文件格式、大小的校验
       if (file.type !== 'image/jpg' && file.type !== 'image/jpeg' && file.type !== 'image/png') {
@@ -275,13 +276,22 @@ export default {
               file,
           };
         };
-        console.info("uploadImg:"+this.uploadImg);
         this.formItem.picture = file;
         
       }
-      return false;
+      return true;
+    },
+    uploadSuccess(response, file, fileList){
+      this.formItem.pictureUrl = "/" + response.data;
+      console.info("res :" + response);
     },
     getNodes(val){
+      // let groupIds = new Array();
+      // val.forEach(item => {
+      //     if(item.title != null && item.title != ''){
+      //       groupIds.push(item.title);
+      //     }
+      // });
       this.formItem.groupId = val;
       console.info(this.formItem.groupId);
     },

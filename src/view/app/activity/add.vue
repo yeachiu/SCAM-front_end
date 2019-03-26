@@ -33,6 +33,8 @@
 </template>
 <script>
 import { post } from '@/libs/axios-cfg'
+import axios from 'axios';
+import qs from 'qs'
 import BaseForm from '@/view/app/activity/components/base-form.vue'
 import SignupForm from '@/view/app/activity/components/signup-form.vue'
 import ScoreSettingForm from '@/view/app/activity/components/score-setting-form.vue'
@@ -40,10 +42,24 @@ export default {
   data () {
     return {
       current: 0,
+      baseDatas:{},
+      scoreData:{},
       finalDatas:{
-        baseData:null,
-        signupData:null,
-        scoreData:null
+        pictureUrl: '',
+        title: '',
+        description: '',
+        signUpTime: null,
+        deadlineTime:null,
+        startTime:null,
+        endTime:null,
+        limitQuota: 100,
+        otherAdmin: '',
+        isblackList: '1',
+        isreview: '1',
+        groupId: '',
+        status:0,
+        rules:'',
+        scoreData:''
       },
       apartmentId:'',
       user:null
@@ -67,29 +83,89 @@ export default {
         this.current -= 1;
       }
     },
-    save(type){
+    async save(type){
       this.$refs.baseForm.$emit("submitBaseData");
       this.$refs.signupForm.$emit("submitSignupData");
       this.$refs.scoreForm.$emit("submitScoreData");
+      this.finalDatas.status = type;
+      // if(this.baseDatas.otherAdmin == null && this.baseDatas.otherAdmin.length < 0){
+      //   return;
+      // }
+      // if(this.baseDatas.groupId == null && this.baseDatas.groupId ==''){
+      //   return;
+      // }
+      // let finalDatas = new FormData();
+      // finalDatas.append("picture",this.baseDatas.picture);
+      // finalDatas.append("title",this.baseDatas.title);
+      // finalDatas.append("description",this.baseDatas.description);
+      // finalDatas.append("signUpTime",this.baseDatas.datetimeSignup[0]);
+      // finalDatas.append("deadlineTime",this.baseDatas.datetimeSignup[1]);
+      // finalDatas.append("startTime",this.baseDatas.datetimeAct[0]);
+      // finalDatas.append("endTime",this.baseDatas.datetimeAct[1]);
+      // finalDatas.append("status",type);
+      // finalDatas.append("otherAdmin",this.baseDatas.otherAdmin);
+      // finalDatas.append("groupId",this.baseDatas.groupId);
+      // finalDatas.append("limitQuota",this.baseDatas.limitQuota);
+      // finalDatas.append("isblackList",this.baseDatas.isblackList);
+      // finalDatas.append("isreview",this.baseDatas.isreview); 
+      // finalDatas.append("rules",this.finalData.rules); 
+      // finalDatas.append("scoreData",this.finalData.scoreData); 
+      // console.info("xixixi:"+finalDatas);
+      try {
+        await post('/app/activity/add',this.finalDatas)
+        this.getData(false)
+        this.$Message.destroy()
+        this.$Message.success({
+            content:"活动添加成功",
+            duration: 1.5
+        });
+      } catch (error) {
+        this.$throw(error)
+      }
+      // axios.post('http://localhost:1000/app/activity/add',finalDatas,{
+      //   headers: {'Content-Type': 'multipart/form-data'}
+      //   }).then(result => {
+      //     // this.getData(false)
+      //     this.$Message.destroy()
+      //     this.$Message.success({
+      //         content:"活动添加成功",
+      //         duration: 1.5
+      //     });
+      // })
     },
     cacheBaseData(val){
       console.log("乖宝贝^3^");
-      this.finalDatas.baseData = val;
+      let baseDatas = val;
+      // if(baseDatas.otherAdmin != null && baseDatas.otherAdmin.length > 0){
+        this.finalDatas.otherAdmin = String(baseDatas.otherAdmin);
+      // }
+      // if(baseDatas.groupId != null && baseDatas.groupId.length > 0){
+        this.finalDatas.groupId = String(baseDatas.groupId);
+      // }
+      this.finalDatas.title = baseDatas.title;
+      this.finalDatas.description = baseDatas.description;
+      this.finalDatas.pictureUrl = baseDatas.pictureUrl;
+      this.finalDatas.signUpTime = baseDatas.datetimeSignup[0];
+      this.finalDatas.deadlineTime = baseDatas.datetimeSignup[1];
+      this.finalDatas.startTime = baseDatas.datetimeAct[0];
+      this.finalDatas.endTime = baseDatas.datetimeAct[1];
+      this.finalDatas.limitQuota = baseDatas.limitQuota;
+      this.finalDatas.isblackList = baseDatas.isblackList;
+      this.finalDatas.isreview = baseDatas.isreview; 
       console.info(this.finalDatas);
     },
     cacheSignupData(val){
       console.log("乖宝贝^3^");
-      this.finalDatas.signupData = val;
-      console.info(this.finalDatas);
+      this.finalDatas.rules = JSON.stringify(val);
     }, 
     cacheScoreData(val){
       console.log("乖宝贝^3^");
-      this.finalDatas.scoreData = val;
-      console.info(this.finalDatas);
+      this.finalDatas.scoreData = JSON.stringify(val);
     }    
   }
 }
 </script>
+
 <style>
   .step-bar{
     width: 100%;

@@ -56,7 +56,6 @@ export default [
       { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
       { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
       { path: 'dictionary',meta:{icon: 'md-bookmarks',title: '字典定义',access: ['system:dictionary:list']}, name: 'system_dictionary', component: () => import('@/view/system/dictionary') },      
-      { path: 'group',meta:{icon: 'md-bookmarks',title: '分组管理',access: ['group:list']}, name: 'group', component: () => import('@/view/app/group') },      
     ]
   },
   {
@@ -98,22 +97,78 @@ export default [
     ]
   },
   {
-    path: '/app',
+    path: '/app/student',
     name: 'app',
     component: Main,
     meta: {
-      title: '应用管理',
+      title: '学生信息管理',
       icon:'ios-cog'
     },
     children:[
+      { 
+        path: 'manage',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '学生管理',
+          access: ['student:manage']
+        }, 
+        name: 'student_manage', component: () => import('@/view/app/student/index.vue') 
+      },
       { 
         path: 'group',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '分组管理',
-          access: ['group:list']
+          access: ['student:group']
         }, 
-        name: 'group', component: () => import('@/view/app/group/index.vue') 
+        name: 'student_group', component: () => import('@/view/app/student/group.vue') 
+      },
+      { 
+        path: 'auth',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '学生管理',
+          access: ['student:auth']
+        }, 
+        name: 'student_auth', component: () => import('@/view/app/student/auth.vue') 
+      }
+    ]
+  },
+  {
+    path: '/app/apartment',
+    name: 'app',
+    component: Main,
+    meta: {
+      title: '部门管理',
+      icon:'ios-cog'
+    },
+    children:[
+      { 
+        path: 'member',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '成员管理',
+          access: ['apartment:member']
+        }, 
+        name: 'apartment_member', component: () => import('@/view/app/apartment/index.vue') 
+      },
+      { 
+        path: 'group',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '分组管理',
+          access: ['apartment:group']
+        }, 
+        name: 'apartment_group', component: () => import('@/view/app/apartment/group.vue') 
+      },
+      { 
+        path: 'message',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '信息修改',
+          access: ['apartment:message']
+        }, 
+        name: 'apartment_message', component: () => import('@/view/app/apartment/message.vue') 
       }
     ]
   },

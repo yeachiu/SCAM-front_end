@@ -9,7 +9,8 @@
                 <template>
                     <Row>
                         <Col span="15">
-                            <Button type="info" to="./add"><Icon type="md-add"></Icon>&nbsp;创建活动</Button>
+                            <!-- <Button type="info" to="./add"><Icon type="md-add"></Icon>&nbsp;创建活动</Button> -->
+                            <Button type="info" @click="openAddModal"><Icon type="md-add"></Icon>&nbsp;创建活动</Button>
                             <Button :disabled="setting.loading" type="success" @click="getData"><Icon type="md-refresh"></Icon>&nbsp;刷新数据</Button>
                             <Button type="primary" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>&nbsp;导出表格</Button>
                         </Col>
@@ -20,7 +21,7 @@
                         </Col>
                     </Row>
                     <Table ref="table"  class="margin-bottom-10"
-                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data"></Table>
+                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data.records"></Table>
                     <Page :total="data.total" class="tr" @on-change="pageChange" :current.sync="data.current" :page-size="data.size"
                       @on-page-size-change="pageSizeChange" show-elevator show-sizer></Page>
                 </template>
@@ -37,29 +38,29 @@
             <div slot="footer">
                 <Button type="error" size="large" long :loading="setting.loading" @click="removeUser">确认删除</Button>
             </div>
-        </Modal>
-        <AddActivity v-if="addActivityModal" :roles="roles" @cancel="onModalCancel"/> -->
+        </Modal> -->
+        <AddActivity v-if="addActivityModal" @cancel="onModalCancel"/>
         <UpdateActivity v-if="updateActivityModal" :roles="roles" :uid="updateUserId" @cancel="onModalCancel"/>
       
     </div>
 </template>
-<script>
+<script> 
     import dayjs from 'dayjs'
     import { post } from '@/libs/axios-cfg'
-    import AddActivity from './add.vue'
+    import AddActivity from './components/add.vue'
     import UpdateActivity from './components/update.vue'
     /** 活动状态 **/
-    let ACT_STATUS_DRAFT = 0;   //草稿
-    let ACT_STATUS_PUBLISH = 1;   //已发布
-    let ACT_STATUS_PROCESS = 2;   //进行中
-    let ACT_STATUS_COMPLETE = 3;   //已结束
-    let ACT_STATUS_CANCEL = -1;  //已取消
+    let ACT_STATUS_DRAFT = 1;   //草稿
+    let ACT_STATUS_PUBLISH = 2;   //已发布
+    let ACT_STATUS_PROCESS = 3;   //进行中
+    let ACT_STATUS_COMPLETE = 4;   //已结束
+    let ACT_STATUS_CANCEL = 0;  //已取消
     export default {
       data () {
         return {
           addActivityModal:false,
           updateActivityModal:false,
-          updateUserId:null,
+          updateId:null,
           selections:[],
           removeModal:false,
           setting:{
@@ -170,7 +171,18 @@
               }
             }
           ],
-          data: {},
+          // data: {},
+          data:{
+            records:[
+              {
+                title:'活动一',status:1,memberNow:13,limitQuota:37,createDate:'Wed Mar 06 2019 00:00:00 GMT+0800 (中国标准时间)'
+              },
+              {
+                title:'活动二',status:2,memberNow:13,limitQuota:37,createDate:'Wed Mar 06 2019 00:00:00 GMT+0800 (中国标准时间)'
+              }
+            ],
+
+          },
           dataFilter:{
             page:1,
             pageSize:15 
@@ -231,15 +243,16 @@
          */
         async getData(){
             this.setting.loading = true;
-            try {
-              let res = await post('/app/activity/list',{
-                page:this.dataFilter.page,
-                pageSize:this.dataFilter.pageSize
-              })
-              this.data = res.data;
-            } catch (error) {
-              this.$throw(error)
-            }
+            //接口暂未开放 ……&*
+            // try {
+            //   let res = await post('/app/activity/list',{
+            //     page:this.dataFilter.page,
+            //     pageSize:this.dataFilter.pageSize
+            //   })
+            //   this.data = res.data;
+            // } catch (error) {
+            //   this.$throw(error)
+            // }
             this.setting.loading = false;
         },
         /**
@@ -261,20 +274,12 @@
          * @param uid 用户ID
          * @param type 打开类型
          */
-        openAddModal(uid,type = 'update'){
-            if(uid==null || type==='update'){
-              if(this.roles==null){
-                this.getRoleList();
-              }
-            }
-            if(uid==null){
-              this.addUserModal = true;
-            }else if(type==='update'){
-              this.updateUserId = uid;
-              this.updateUserModal = true;
-            }else{
-              this.resetPasswordUser = uid;
-              this.resetPasswordModal = true;
+        openAddModal(actiId){
+            if(actiId==null){
+              this.addActivityModal = true;
+            }else {
+              this.updateId = actiId;
+              this.updateActivityModal = true;
             }
         },
         /**

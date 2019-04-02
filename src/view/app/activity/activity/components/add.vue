@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover>
+    <Modal v-model="show" title="添加活动"
+            :mask-closable="false" :closable="false">
+    <!-- <Card :bordered="false" dis-hover> -->
       <p slot="title">
         <Steps :current="current" style="margin-left: 10%;">
           <Step title="基本信息" icon="ios-person"></Step>
@@ -28,16 +30,17 @@
           <Button type="primary" @click="next">下一步</Button>
         </template>
       </div>
-    </Card>
+    <!-- </Card> -->
+    </Modal>
   </div>
 </template>
 <script>
 import { post } from '@/libs/axios-cfg'
 import axios from 'axios';
 import qs from 'qs'
-import BaseForm from '@/view/app/activity/components/base-form.vue'
-import SignupForm from '@/view/app/activity/components/signup-form.vue'
-import ScoreSettingForm from '@/view/app/activity/components/score-setting-form.vue'
+import BaseForm from '@/view/app/activity/activity/components/base-form.vue'
+import SignupForm from '@/view/app/activity/activity/components/signup-form.vue'
+import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
 export default {
   data () {
     return {

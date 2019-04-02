@@ -43,22 +43,6 @@ export default [
     ]
   },
   {
-    path: '/system',
-    name: 'doc',
-    component: Main,
-    meta: {
-      title: '系统设置',
-      icon:'ios-cog'
-    },
-    children:[
-      { path: 'user',meta:{icon: 'md-people', title: '用户管理',access: ['system:user:list']}, name: 'system_user', component: () => import('@/view/system/user') },
-      { path: 'person-stalker',meta:{icon: 'md-body',title: '角色管理',}, name: 'system_role', component: () => import('@/view/system/role') },
-      { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
-      { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
-      { path: 'dictionary',meta:{icon: 'md-bookmarks',title: '字典定义',access: ['system:dictionary:list']}, name: 'system_dictionary', component: () => import('@/view/system/dictionary') },      
-    ]
-  },
-  {
     path: '/app/activity',
     name: 'act',
     component: Main,
@@ -74,16 +58,34 @@ export default [
           title: '活动管理',
           access: ['activity:list']
         }, 
-        name: 'activity_manage', component: () => import('@/view/app/activity/manage.vue') 
+        name: 'activity_manage', component: () => import('@/view/app/activity/activity/manage.vue') 
       },
+      // { 
+      //   path: 'add',
+      //   meta:{
+      //     icon: 'ios-contacts-outline', 
+      //     title: '活动创建',
+      //     access: ['activity:add']
+      //   }, 
+      //   name: 'activity_add', component: () => import('@/view/app/activity/activity/add.vue') 
+      // },
       { 
-        path: 'add',
+        path: 'checkin',
         meta:{
           icon: 'ios-contacts-outline', 
-          title: '活动创建',
-          access: ['activity:add']
+          title: '签到管理',
+          access: ['activity:checkin']
         }, 
-        name: 'activity_add', component: () => import('@/view/app/activity/add.vue') 
+        name: 'activity_checkin', component: () => import('@/view/app/activity/checkin/index.vue') 
+      },
+      { 
+        path: 'score',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '学分管理',
+          access: ['activity:score']
+        }, 
+        name: 'activity_score', component: () => import('@/view/app/activity/score/index.vue') 
       },
       { 
         path: 'cancel',
@@ -92,7 +94,7 @@ export default [
           title: '回收站',
           access: ['activity:list']
         }, 
-        name: 'activity_cancel', component: () => import('@/view/app/activity/cancel.vue') 
+        name: 'activity_cancel', component: () => import('@/view/app/activity/activity/cancel.vue') 
       }
     ]
   },
@@ -127,7 +129,7 @@ export default [
         path: 'auth',
         meta:{
           icon: 'ios-contacts-outline', 
-          title: '学生管理',
+          title: '学生认证',
           access: ['student:auth']
         }, 
         name: 'student_auth', component: () => import('@/view/app/student/auth.vue') 
@@ -170,6 +172,22 @@ export default [
         }, 
         name: 'apartment_message', component: () => import('@/view/app/apartment/message.vue') 
       }
+    ]
+  },
+  {
+    path: '/system',
+    name: 'doc',
+    component: Main,
+    meta: {
+      title: '系统设置',
+      icon:'ios-cog'
+    },
+    children:[
+      { path: 'user',meta:{icon: 'md-people', title: '用户管理',access: ['system:user:list']}, name: 'system_user', component: () => import('@/view/system/user') },
+      { path: 'person-stalker',meta:{icon: 'md-body',title: '角色管理',}, name: 'system_role', component: () => import('@/view/system/role') },
+      { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
+      { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
+      { path: 'dictionary',meta:{icon: 'md-bookmarks',title: '字典定义',access: ['system:dictionary:list']}, name: 'system_dictionary', component: () => import('@/view/system/dictionary') },      
     ]
   },
   {

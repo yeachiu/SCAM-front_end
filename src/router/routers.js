@@ -60,15 +60,15 @@ export default [
         }, 
         name: 'activity_manage', component: () => import('@/view/app/activity/activity/manage.vue') 
       },
-      // { 
-      //   path: 'add',
-      //   meta:{
-      //     icon: 'ios-contacts-outline', 
-      //     title: '活动创建',
-      //     access: ['activity:add']
-      //   }, 
-      //   name: 'activity_add', component: () => import('@/view/app/activity/activity/add.vue') 
-      // },
+      { 
+        path: 'signup',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '报名管理',
+          access: ['activity:signup']
+        }, 
+        name: 'activity_signup', component: () => import('@/view/app/activity/signup/index.vue') 
+      },
       { 
         path: 'checkin',
         meta:{
@@ -100,7 +100,7 @@ export default [
   },
   {
     path: '/app/student',
-    name: 'app',
+    name: 'stu',
     component: Main,
     meta: {
       title: '学生信息管理',
@@ -138,7 +138,7 @@ export default [
   },
   {
     path: '/app/apartment',
-    name: 'app',
+    name: 'apar',
     component: Main,
     meta: {
       title: '部门管理',
@@ -146,13 +146,22 @@ export default [
     },
     children:[
       { 
+        path: '/manage',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '部门管理',
+          access: ['apartment:manage']
+        }, 
+        name: 'apartment_manage', component: () => import('@/view/app/apartment/index.vue') 
+      },
+      { 
         path: 'member',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '成员管理',
           access: ['apartment:member']
         }, 
-        name: 'apartment_member', component: () => import('@/view/app/apartment/index.vue') 
+        name: 'apartment_member', component: () => import('@/view/app/apartment/member.vue') 
       },
       { 
         path: 'group',
@@ -162,16 +171,8 @@ export default [
           access: ['apartment:group']
         }, 
         name: 'apartment_group', component: () => import('@/view/app/apartment/group.vue') 
-      },
-      { 
-        path: 'message',
-        meta:{
-          icon: 'ios-contacts-outline', 
-          title: '信息修改',
-          access: ['apartment:message']
-        }, 
-        name: 'apartment_message', component: () => import('@/view/app/apartment/message.vue') 
       }
+      
     ]
   },
   {

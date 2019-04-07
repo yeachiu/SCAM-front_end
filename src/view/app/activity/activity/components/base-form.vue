@@ -50,12 +50,12 @@
         <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
         </Select>
       </FormItem>
-      <FormItem label="启用黑名单">
+      <!-- <FormItem label="启用黑名单">
         <RadioGroup v-model="formItem.isblackList">
           <Radio label="0">启用</Radio>
           <Radio label="1">不启用</Radio>
         </RadioGroup>
-      </FormItem>
+      </FormItem> -->
       <FormItem label="报名是否需要审核">
         <RadioGroup v-model="formItem.isreview">
           <Radio label="0">需要</Radio>
@@ -283,7 +283,7 @@ export default {
     },
     uploadSuccess(response, file, fileList){
       this.formItem.pictureUrl = "/" + response.data;
-      console.info("res :" + response);
+      console.info(this.formItem);
     },
     getNodes(val){
       // let groupIds = new Array();
@@ -311,10 +311,11 @@ export default {
           this.loading = false;
           const list = this.lists.map(item => {
             return {
-              value: item,
-              label: item
+              value: item.id,
+              label: item.username
             };
           });
+          console.info(list)
           this.options = list.filter(item => item.label.toLowerCase().indexOf(query.toLowerCase()) > -1);
         }, 200);
       } else {

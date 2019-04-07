@@ -10,7 +10,7 @@
                     <Row>
                         <Col span="15">
                             <!-- <Button type="info" to="./add"><Icon type="md-add"></Icon>&nbsp;创建活动</Button> -->
-                            <Button type="info" @click="openAddModal"><Icon type="md-add"></Icon>&nbsp;创建活动</Button>
+                            <Button type="info" @click="openAddModal(null)"><Icon type="md-add"></Icon>&nbsp;创建活动</Button>
                             <Button :disabled="setting.loading" type="success" @click="getData"><Icon type="md-refresh"></Icon>&nbsp;刷新数据</Button>
                             <Button type="primary" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>&nbsp;导出表格</Button>
                         </Col>
@@ -27,20 +27,8 @@
                 </template>
             </div>
         </Card>
-        <!-- <Modal v-model="removeModal" width="360">
-            <p slot="header" style="color:#f60;text-align:center">
-                <Icon type="information-circled"></Icon>
-                <span>提示</span>
-            </p>
-            <div style="text-align:center">
-                <p>此操作为不可逆操作，是否确认删除？</p>
-            </div>
-            <div slot="footer">
-                <Button type="error" size="large" long :loading="setting.loading" @click="removeUser">确认删除</Button>
-            </div>
-        </Modal> -->
         <AddActivity v-if="addActivityModal" @cancel="onModalCancel"/>
-        <UpdateActivity v-if="updateActivityModal" :roles="roles" :uid="updateUserId" @cancel="onModalCancel"/>
+        <UpdateActivity v-if="updateActivityModal" :roles="roles" :uid="updateId" @cancel="onModalCancel"/>
       
     </div>
 </template>
@@ -290,13 +278,10 @@
         onModalCancel(type,reload = false){
           switch(type){
             case 'add':{
-              this.addUserModal = false;
+              this.addActivityModal = false;
             };break;
             case 'update':{
-              this.updateUserModal = false;
-            };break;
-            case 'resetPassword':{
-              this.resetPasswordModal = false;
+              this.updateActivityModal = false;
             };break;
           }
           if(reload) this.getData();

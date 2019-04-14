@@ -43,12 +43,14 @@
     </Card>
     <Modal v-model="modal.show" :title="modal.title" @on-ok="addOK"
           :mask-closable="false">
-      <Form :model="modal.data" :label-width="80">
+      <Form :model="modal.data" :label-width="100" style="width:80%;">
         <FormItem label="名称">
           <Input v-model.trim="modal.data.name"></Input>
         </FormItem>
-        <FormItem label="所属学院专业">
-          <Select v-model.trim="modal.data.dictName"></Select>
+        <FormItem label="专业">
+          <Select v-model="modal.data.dictId">
+            <Option v-for="item in dictList" :value="item.id" :key="item.id">{{ item.dictName }}</Option>
+          </Select>
         </FormItem>
         <FormItem label="年级">
           <InputNumber :max="2900" :min="1900" v-model.trim="modal.data.period"></InputNumber>
@@ -91,11 +93,11 @@
             },
             {
               title:'分组名称',
-              key:'name',
+              key:'className',
               render: (h, params) => {
                 if(editIndex === index){
                   return h('div', [
-                    h('strong', params.row.name),
+                    h('strong', params.row.className),
                     h(Input,{
                       props: {type: 'text',value:this.editName},
                       on: { Input: (value) => { this.editName = value }}
@@ -103,14 +105,19 @@
                   ]);
                 }else{
                   return h('div', [
-                    h('strong', params.row.name)
+                    h('strong', params.row.className)
                   ]);
                 }
               }
             },
             {
               title:'所属学院',
-              key:'dictName',
+              key:'institute',
+              sortable: true
+            },
+            {
+              title:'专业',
+              key:'profession',
               sortable: true
             },
             {
@@ -160,14 +167,14 @@
         ],
         editIndex:-1, // 当前聚焦的输入框的行数
         editName: '',
-        dictNames:[],
+        dictList:[],
         modal:{
           show:false,
           title:'添加分组',
           data:{
             id:'',
             name:'',
-            dictName:'',
+            dictId:'',
             period: dayjs().year(),
             classNum:1
           }
@@ -184,10 +191,11 @@
             try {
                 let res1 = await post('/app/group/list')
                 this.datas = res1.data;
-                let res2 = await post('app/dictionary/listByCode/{dictCode}',null,{
+                console.info(res1.data)
+                let res2 = await post('system/dictionary/list/{dictCode}',null,{
                   dictCode:'INSTITUTE'
                 })
-                this.dictNames = res2.data;
+                this.dictList = res2.data;
             } catch (error) {
                 this.$throw(error)
             }

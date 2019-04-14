@@ -146,13 +146,22 @@ export default [
     },
     children:[
       { 
+        path: '/index',
+        meta:{
+          icon: 'ios-contacts-outline', 
+          title: '部门主页',
+          access: ['apartment:index']
+        }, 
+        name: 'apartment_index', component: () => import('@/view/app/apartment/index.vue') 
+      },
+      { 
         path: '/manage',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '部门管理',
           access: ['apartment:manage']
         }, 
-        name: 'apartment_manage', component: () => import('@/view/app/apartment/index.vue') 
+        name: 'apartment_manage', component: () => import('@/view/app/apartment/manage.vue') 
       },
       { 
         path: 'member',

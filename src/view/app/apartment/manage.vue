@@ -3,13 +3,13 @@
     <Card>
       <p slot="title" class="card-title">
         <Icon type="home"></Icon>
-        <span>学生管理</span>
+        <span>部门管理</span>
       </p>
       <div>
         <template>
           <Row>
             <Col span="15">
-              <Button type="info" @click="openAddOrUpModal(null)"><Icon type="md-add"></Icon>&nbsp;添加学生</Button>
+              <Button type="info" @click="openAddOrUpModal(null)"><Icon type="md-add"></Icon>&nbsp;添加部门</Button>
               <Button :disabled="setting.loading" type="success" @click="getData"><Icon type="md-refresh"></Icon>&nbsp;刷新数据</Button>
               <Button type="primary" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>&nbsp;导出表格</Button>
             </Col>
@@ -26,8 +26,8 @@
         </template>
       </div>
     </Card>
-    <AddStudent v-if="addStudentModal"  @cancel="onAddStudentModalCancel"/>
-    <UpdateStudent v-if="updateStudentModal" :update-object="updateObject" @cancel="onUpdateStudentModalCancel"/>
+    <AddApartment v-if="addApartmentModal"  @cancel="onAddApartmentModalCancel"/>
+    <UpdateApartment v-if="updateApartmentModal" :update-object="updateObject" @cancel="onUpdateApartmentModalCancel"/>
     <Modal v-model="removeModal" width="360">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="information-circled"></Icon>
@@ -43,14 +43,14 @@
   </div>
 </template>
 <script>
-  import AddStudent from './components/add.vue'
-  import UpdateStudent from './components/update.vue'
+  import AddApartment from './components/add.vue'
+  import UpdateApartment from './components/update.vue'
   import { post } from '@/libs/axios-cfg'
   export default {
     data () {
       return {
-        addStudentModal:false,
-        updateStudentModal:false,
+        addApartmentModal:false,
+        updateApartmentModal:false,
         updateObject:null,
         removeModal:false,
         setting:{
@@ -58,31 +58,28 @@
             showBorder:true
         },
         search:{
-            type:'realName',
+            type:'name',
             value:''
         },
-        
         columns: [
-          {title: '学号', key: 'stuNum',sortable: true},
-          {title: '姓名', key: 'name',sortable: true},
-          {title: '学院', sortable:true,
+          {
+            type: 'expand',
+            width: 50,
             render: (h, params) => {
-              return h('p',{},params.row.groupVO.institute)
+              return h('div',[
+                h('p',{
+                  style:{fontWeight:'bold',lineHeight:'40px'}
+                },'部门简介'),
+                h('p',{},params.row.about)
+              ])
             }
+              
           },
-          {title: '专业', sortable:true,
+          {title: 'ID', key: 'id',sortable: true},
+          {title: '部门名', key: 'name',sortable: true},
+          {title:'管理员',sortable:true,
             render: (h, params) => {
-              return h('p',{},params.row.groupVO.profession)
-            }
-          },
-          {title: '年级', sortable:true,
-            render: (h, params) => {
-              return h('p',{},params.row.groupVO.period)
-            }
-          },
-          {title: '班级', sortable:true,
-            render: (h, params) => {
-              return h('p',{},params.row.groupVO.className)
+              return h('span',{},params.row.apartAdmin.realName)
             }
           },
           {
@@ -92,6 +89,15 @@
             align: 'center',
             render: (h, params) => {
               return h('div', [
+                h('Button', {
+                  props: {type: 'success',size: 'small'},
+                  style: {marginRight: '5px'},
+                  on:{
+                    click:()=>{
+                      this.showAllMember(params.row)
+                    }
+                  }
+                }, '查看部门成员'),
                 h('Button', {
                   props: {type: 'primary',size: 'small'},
                   style: {marginRight: '5px'},
@@ -127,7 +133,7 @@
       }
     },
     components: {
-      AddStudent,UpdateStudent
+      AddApartment,UpdateApartment
     },
     created(){
       this.getData();
@@ -141,6 +147,16 @@
         this.dataFilter.pageSize = p;
         this.getData();
       },
+      async getAllMember(id){
+        try {
+          let res = await post('/app/apartment/member/list/{id}',null,{
+            id:id
+          })
+          this.allMember = res.data;
+        } catch (error) {
+          this.$throw(error)
+        }
+      },
       async remove(){
         this.removeModal = false;
         if(this.removeObject==null){
@@ -149,7 +165,7 @@
         }
         this.setting.loading = true;
         try {
-          let res = await post('/system/student/remove/{id}',null,{
+          let res = await post('/system/apartment/remove/{id}',null,{
             id: this.removeObject.obj.id
           })
           this.$Message.success("删除成功");
@@ -162,7 +178,7 @@
       async getData(){
         this.setting.loading = true;
         try {
-          let res = await post('/app/student/list',{
+          let res = await post('/system/apartment/list',{
             page:this.dataFilter.page,
             pageSize:this.dataFilter.pageSize
           })
@@ -174,24 +190,56 @@
       },
       async openAddOrUpModal(obj,type = 'update'){
         if(obj===null){
-          this.addStudentModal = true;
+          this.addApartmentModal = true;
         }else if(type==='update'){
           this.updateObject = obj;
-          this.updateStudentModal = true;
+          this.updateApartmentModal = true;
         }
       },
-      onAddStudentModalCancel(up=false){
-        this.addStudentModal = false;
+      onAddApartmentModalCancel(up=false){
+        this.addApartmentModal = false;
         if(up) this.getData()
       },
-      onUpdateStudentModalCancel(up=false){
-        this.updateStudentModal = false;
+      onUpdateApartmentModalCancel(up=false){
+        this.updateApartmentModal = false;
         if(up) this.getData()
+      },
+      async showAllResource(row){
+        this.getAllMember(row.id);
+          let members = this.allMember;
+          console.info('typeof::'+typeof(members));
+          if(members != null && typeof(members)=="Array" && members.length > 0){
+            this.$Modal.info({
+              title: row.name+' - 成员',
+              width:'40%',
+              render: (h)=>{
+                let ps = [];
+                members.forEach(element => {
+                    let r = h('Tag',{
+                        props:{
+                          color:'green',
+                          type:'dot',
+                        }
+                    },element.realName);
+                    ps.push(r);
+                });
+                return h('div',{
+                    style:{padding:'20px 0 10px 0'}
+                },ps);
+              }
+            });
+          }else{
+              this.$Notice.destroy()
+              this.$Notice.info({
+                  title:"该部门暂无成员信息",
+                  duration:3
+              })
+          }
       },
       exportData(type){
           if (type === 1) {
               this.$refs.table.exportCsv({
-                  filename: '学生信息-'+new Date().getTime(),
+                  filename: '权限数据-'+new Date().getTime(),
                   columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
                   data: this.data
               });

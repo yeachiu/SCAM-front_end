@@ -48,6 +48,7 @@ export default {
   data () {
     return {
       show: true,
+      loading:false,
       current: 0,
       baseDatas:{},
       scoreData:{},
@@ -55,14 +56,14 @@ export default {
         pictureUrl: '',
         title: '',
         description: '',
-        signUpTime: null,
-        deadlineTime:null,
-        startTime:null,
-        endTime:null,
+        signupTime: {},
+        deadlineTime:{},
+        startTime:{},
+        endTime:{},
         limitQuota: 100,
         otherAdmin: '',
-        isblackList: '1',
-        isreview: '1',
+        isblacklist: 1,
+        isreview: 1,
         groupId: '',
         status:0,
         rules:'',
@@ -116,7 +117,7 @@ export default {
     },
     cacheBaseData(val){
       console.log("乖宝贝^3^");
-      this.finalDatas.baseData = val;
+      // this.finalDatas.baseData = val;
       let baseDatas = val;
       if(baseDatas.otherAdmin != null && baseDatas.otherAdmin.length > 0){
         console.info("baseDatas.otherAdmin:");
@@ -126,25 +127,27 @@ export default {
       if(baseDatas.groupId != null && baseDatas.groupId.length > 0){
         console.info("baseDatas.groupId:");
         console.info(baseDatas.groupId);
+        let ids = new Array();
         // 接口完善后换'id'即可
         baseDatas.groupId.forEach(ele => {
           if(ele.title != null){
             alert(ele.title)
-            this.ids.push(ele.title);
+            ids.push(ele.title);
           }
         });
-        this.finalDatas.groupId = String(this.ids);
+        this.finalDatas.groupId = String(ids);
       }
       this.finalDatas.title = baseDatas.title;
       this.finalDatas.description = baseDatas.description;
       this.finalDatas.pictureUrl = baseDatas.pictureUrl;
-      this.finalDatas.signUpTime = baseDatas.datetimeSignup[0];
-      this.finalDatas.deadlineTime = baseDatas.datetimeSignup[1];
-      this.finalDatas.startTime = baseDatas.datetimeAct[0];
-      this.finalDatas.endTime = baseDatas.datetimeAct[1];
+      this.finalDatas.signupTime = new Date(baseDatas.datetimeSignup[0]);
+      this.finalDatas.deadlineTime = new Date(baseDatas.datetimeSignup[1]);
+      this.finalDatas.startTime = new Date(baseDatas.datetimeAct[0]);
+      this.finalDatas.endTime = new Date(baseDatas.datetimeAct[1]);
       this.finalDatas.limitQuota = baseDatas.limitQuota;
-      this.finalDatas.isblackList = baseDatas.isblackList;
-      this.finalDatas.isreview = baseDatas.isreview; 
+      this.finalDatas.isblacklist = new Number(baseDatas.isblacklist);
+      this.finalDatas.isreview = new Number(baseDatas.isreview); 
+      console.log('this.finalDatas')
       console.info(this.finalDatas);
     },
     cacheSignupData(val){

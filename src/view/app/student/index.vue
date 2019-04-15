@@ -27,7 +27,7 @@
       </div>
     </Card>
     <AddStudent v-if="addStudentModal"  @cancel="onAddStudentModalCancel"/>
-    <UpdateStudent v-if="updateStudentModal" :update-object="updateObject" @cancel="onUpdateStudentModalCancel"/>
+    <UpdateStudent v-if="updateStudentModal" :updateObject="updateObject" @cancel="onUpdateStudentModalCancel"/>
     <Modal v-model="removeModal" width="360">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="information-circled"></Icon>
@@ -64,7 +64,7 @@
         
         columns: [
           {title: '学号', key: 'stuNum',sortable: true},
-          {title: '姓名', key: 'name',sortable: true},
+          {title: '姓名', key: 'realName',sortable: true},
           {title: '学院', sortable:true,
             render: (h, params) => {
               return h('p',{},params.row.groupVO.institute)
@@ -149,7 +149,7 @@
         }
         this.setting.loading = true;
         try {
-          let res = await post('/system/student/remove/{id}',null,{
+          let res = await post('/app/student/remove/{id}',null,{
             id: this.removeObject.obj.id
           })
           this.$Message.success("删除成功");

@@ -160,6 +160,8 @@
                 try {
                     let res = await post('/system/dictionary/list')
                     this.datas = res.data;
+                    console.log('dictionarylist')
+                    console.info(res.data);
                 } catch (error) {
                     this.$throw(error)
                 }

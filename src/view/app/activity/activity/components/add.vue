@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Card :bordered="false" dis-hover>
+    <Modal v-model="show" title="添加活动"
+            :mask-closable="false" width="900">
+    <!-- <Card :bordered="false" dis-hover> -->
       <p slot="title">
         <Steps :current="current" style="margin-left: 10%;">
           <Step title="基本信息" icon="ios-person"></Step>
@@ -20,27 +22,33 @@
       <div id="button-group">
         <template v-if="current == 2">
           <Button type="primary" @click="prev">上一步</Button>
-          <Button type="primary" @click="save(0)">存为草稿</Button>
-          <Button type="primary" @click="save(1)">保存发布</Button>
         </template>
         <template v-else>
           <Button type="primary" @click="prev">上一步</Button>
           <Button type="primary" @click="next">下一步</Button>
         </template>
       </div>
-    </Card>
+      <div slot="footer">
+        <Button type="default" :disabled="loading" @click="cancel(false)">取消</Button>
+        <Button type="primary" @click="save(0)">存为草稿</Button>
+        <Button type="primary" @click="save(1)">保存发布</Button>
+      </div>
+    <!-- </Card> -->
+    </Modal>
   </div>
 </template>
 <script>
 import { post } from '@/libs/axios-cfg'
 import axios from 'axios';
 import qs from 'qs'
-import BaseForm from '@/view/app/activity/components/base-form.vue'
-import SignupForm from '@/view/app/activity/components/signup-form.vue'
-import ScoreSettingForm from '@/view/app/activity/components/score-setting-form.vue'
+import BaseForm from '@/view/app/activity/activity/components/base-form.vue'
+import SignupForm from '@/view/app/activity/activity/components/signup-form.vue'
+import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
 export default {
   data () {
     return {
+      show: true,
+      loading:false,
       current: 0,
       baseDatas:{},
       scoreData:{},
@@ -48,14 +56,14 @@ export default {
         pictureUrl: '',
         title: '',
         description: '',
-        signUpTime: null,
-        deadlineTime:null,
-        startTime:null,
-        endTime:null,
+        signupTime: {},
+        deadlineTime:{},
+        startTime:{},
+        endTime:{},
         limitQuota: 100,
         otherAdmin: '',
-        isblackList: '1',
-        isreview: '1',
+        isblacklist: 1,
+        isreview: 1,
         groupId: '',
         status:0,
         rules:'',
@@ -69,6 +77,13 @@ export default {
     BaseForm,SignupForm,ScoreSettingForm
   },
   methods: {
+    /**
+     * @description 关闭Modal
+     * @param reload 是否重新加载数据
+     */
+    cancel(reload = false) {
+      this.$emit("cancel", "add", reload);
+    },
     next () {
       if (this.current == 2) {
         this.current = 0;
@@ -88,29 +103,6 @@ export default {
       this.$refs.signupForm.$emit("submitSignupData");
       this.$refs.scoreForm.$emit("submitScoreData");
       this.finalDatas.status = type;
-      // if(this.baseDatas.otherAdmin == null && this.baseDatas.otherAdmin.length < 0){
-      //   return;
-      // }
-      // if(this.baseDatas.groupId == null && this.baseDatas.groupId ==''){
-      //   return;
-      // }
-      // let finalDatas = new FormData();
-      // finalDatas.append("picture",this.baseDatas.picture);
-      // finalDatas.append("title",this.baseDatas.title);
-      // finalDatas.append("description",this.baseDatas.description);
-      // finalDatas.append("signUpTime",this.baseDatas.datetimeSignup[0]);
-      // finalDatas.append("deadlineTime",this.baseDatas.datetimeSignup[1]);
-      // finalDatas.append("startTime",this.baseDatas.datetimeAct[0]);
-      // finalDatas.append("endTime",this.baseDatas.datetimeAct[1]);
-      // finalDatas.append("status",type);
-      // finalDatas.append("otherAdmin",this.baseDatas.otherAdmin);
-      // finalDatas.append("groupId",this.baseDatas.groupId);
-      // finalDatas.append("limitQuota",this.baseDatas.limitQuota);
-      // finalDatas.append("isblackList",this.baseDatas.isblackList);
-      // finalDatas.append("isreview",this.baseDatas.isreview); 
-      // finalDatas.append("rules",this.finalData.rules); 
-      // finalDatas.append("scoreData",this.finalData.scoreData); 
-      // console.info("xixixi:"+finalDatas);
       try {
         await post('/app/activity/add',this.finalDatas)
         this.getData(false)
@@ -122,36 +114,40 @@ export default {
       } catch (error) {
         this.$throw(error)
       }
-      // axios.post('http://localhost:1000/app/activity/add',finalDatas,{
-      //   headers: {'Content-Type': 'multipart/form-data'}
-      //   }).then(result => {
-      //     // this.getData(false)
-      //     this.$Message.destroy()
-      //     this.$Message.success({
-      //         content:"活动添加成功",
-      //         duration: 1.5
-      //     });
-      // })
     },
     cacheBaseData(val){
       console.log("乖宝贝^3^");
+      // this.finalDatas.baseData = val;
       let baseDatas = val;
-      // if(baseDatas.otherAdmin != null && baseDatas.otherAdmin.length > 0){
+      if(baseDatas.otherAdmin != null && baseDatas.otherAdmin.length > 0){
+        console.info("baseDatas.otherAdmin:");
+        console.info(baseDatas.otherAdmin);
         this.finalDatas.otherAdmin = String(baseDatas.otherAdmin);
-      // }
-      // if(baseDatas.groupId != null && baseDatas.groupId.length > 0){
-        this.finalDatas.groupId = String(baseDatas.groupId);
-      // }
+      }
+      if(baseDatas.groupId != null && baseDatas.groupId.length > 0){
+        console.info("baseDatas.groupId:");
+        console.info(baseDatas.groupId);
+        let ids = new Array();
+        // 接口完善后换'id'即可
+        baseDatas.groupId.forEach(ele => {
+          if(ele.title != null){
+            alert(ele.title)
+            ids.push(ele.title);
+          }
+        });
+        this.finalDatas.groupId = String(ids);
+      }
       this.finalDatas.title = baseDatas.title;
       this.finalDatas.description = baseDatas.description;
       this.finalDatas.pictureUrl = baseDatas.pictureUrl;
-      this.finalDatas.signUpTime = baseDatas.datetimeSignup[0];
-      this.finalDatas.deadlineTime = baseDatas.datetimeSignup[1];
-      this.finalDatas.startTime = baseDatas.datetimeAct[0];
-      this.finalDatas.endTime = baseDatas.datetimeAct[1];
+      this.finalDatas.signupTime = new Date(baseDatas.datetimeSignup[0]);
+      this.finalDatas.deadlineTime = new Date(baseDatas.datetimeSignup[1]);
+      this.finalDatas.startTime = new Date(baseDatas.datetimeAct[0]);
+      this.finalDatas.endTime = new Date(baseDatas.datetimeAct[1]);
       this.finalDatas.limitQuota = baseDatas.limitQuota;
-      this.finalDatas.isblackList = baseDatas.isblackList;
-      this.finalDatas.isreview = baseDatas.isreview; 
+      this.finalDatas.isblacklist = new Number(baseDatas.isblacklist);
+      this.finalDatas.isreview = new Number(baseDatas.isreview); 
+      console.log('this.finalDatas')
       console.info(this.finalDatas);
     },
     cacheSignupData(val){

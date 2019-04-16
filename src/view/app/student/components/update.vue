@@ -50,7 +50,7 @@ export default {
                 dictId: [{ required: true, message: "请选择专业" }]
             },
             dictList: [],
-            isExist:true
+            isExist:true,
         }
     },
     props:{
@@ -103,14 +103,8 @@ export default {
                         period: this.formData.period,
                         whatClass: this.formData.whatClass
                     }
-                    this.isExistGroup(postObj);
-                    if(this.isExist){
-                        alert("进来了")
-                        this.update(postObj)
-                    }else{
-                        this.cancel(true);
-                    }
-                     
+                
+                    this.update(postObj)
                 // }
             }
         })
@@ -118,11 +112,18 @@ export default {
       async update(data){
         this.loading = true;
         try {
-            let res = await post('/app/student/update/{id}',data,{
-                id:this.updateObject.id
-            })
-            this.$Message.success("学生信息 "+data.realName+" 更新成功");
-            this.cancel(true);
+            let res = await post('/app/group/exist',data)
+            let bool = res.data;
+            if(bool){
+                let res = await post('/app/student/update/{id}',data,{
+                    id:this.updateObject.id
+                })
+                this.$Message.success("学生信息 "+data.realName+" 更新成功");
+            }else{
+                this.isExist = false;
+                this.$Message.error("暂未有对应用户分组，请先添加");
+            }
+            this.cancel(true);        
         } catch (error) {
             this.$throw(error)
         }

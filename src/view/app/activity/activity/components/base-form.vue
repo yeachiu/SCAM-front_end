@@ -37,10 +37,12 @@
         <Input v-model="formItem.description" type="textarea" :autosize="{minRows: 3,maxRows: 5}" placeholder="Enter something..."></Input>
       </FormItem>
       <FormItem label="报名时间" prop="datetimeSignup">
-        <DatePicker v-model="formItem.datetimeSignup" type="datetimerange" format="yyyy-MM-dd HH:mm" placeholder="选择报名时间段" style="width: 300px"></DatePicker>
+        <DatePicker v-model="formItem.datetimeSignup" type="datetimerange" format="yyyy-MM-dd HH:mm:ss" @on-change="changeSignupDate"
+          placeholder="选择报名时间段" style="width: 300px"></DatePicker>
       </FormItem>
       <FormItem label="活动时间" prop="datetimeAct">
-        <DatePicker v-model="formItem.datetimeAct" type="datetimerange" format="yyyy-MM-dd HH:mm" placeholder="活动时间" style="width: 300px"></DatePicker>
+        <DatePicker v-model="formItem.datetimeAct" type="datetimerange" format="yyyy-MM-dd HH:mm:ss" @on-change="changeActDate"
+          placeholder="活动时间" style="width: 300px"></DatePicker>
       </FormItem>
       <FormItem label="名额限制">
         <InputNumber v-model="formItem.limitQuota" :max="500" :min="1"></InputNumber>
@@ -50,12 +52,12 @@
         <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
         </Select>
       </FormItem>
-      <FormItem label="启用黑名单">
-        <RadioGroup v-model="formItem.isblackList">
+      <!-- <FormItem label="启用黑名单">
+        <RadioGroup v-model="formItem.isblacklist">
           <Radio label="0">启用</Radio>
           <Radio label="1">不启用</Radio>
         </RadioGroup>
-      </FormItem>
+      </FormItem> -->
       <FormItem label="报名是否需要审核">
         <RadioGroup v-model="formItem.isreview">
           <Radio label="0">需要</Radio>
@@ -97,7 +99,7 @@ export default {
         datetimeAct: [],
         limitQuota: 100,
         otherAdmin: [],
-        isblackList: '1',
+        isblacklist: '1',
         isreview: '1',
         groupId: [],
       },
@@ -283,7 +285,7 @@ export default {
     },
     uploadSuccess(response, file, fileList){
       this.formItem.pictureUrl = "/" + response.data;
-      console.info("res :" + response);
+      console.info(this.formItem);
     },
     getNodes(val){
       // let groupIds = new Array();
@@ -311,10 +313,11 @@ export default {
           this.loading = false;
           const list = this.lists.map(item => {
             return {
-              value: item,
-              label: item
+              value: item.id,
+              label: item.username
             };
           });
+          console.info(list)
           this.options = list.filter(item => item.label.toLowerCase().indexOf(query.toLowerCase()) > -1);
         }, 200);
       } else {
@@ -337,6 +340,14 @@ export default {
     handleClose (event, name) {
       const index = this.formItem.groupId.indexOf(name);
       this.formItem.groupId.splice(index, 1);
+    },
+    changeSignupDate(date){
+      this.formItem.datetimeSignup = date;
+      console.log(date)
+    },
+    changeActDate(date){
+      this.formItem.datetimeAct = date;
+      console.log(date)
     }
   },
   mounted(){

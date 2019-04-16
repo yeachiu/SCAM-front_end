@@ -14,18 +14,9 @@
               </Col>
           </Row> 
            <Table :columns="columns" :data="datas">
-            <!-- <template slot-scope="{ row, index }" slot="name">
+            <template slot-scope="{ row, index }" slot="className">
               <Input type="text" v-model="editName" v-if="editIndex === index" />
-              <span v-else>{{ row.name }}</span>
-            </template>
-            <template slot="dictName">
-              <span>{{ row.dictName }}</span>
-            </template>
-             <template slot="period">
-              <span>{{ row.period }}</span>
-            </template>
-             <template slot="whatClass">
-              <span>{{ row.whatClass }}</span>
+              <span v-else>{{ row.className }}</span>
             </template>
             <template slot-scope="{ row, index }" slot="action">
               <div v-if="editIndex === index">
@@ -34,21 +25,23 @@
               </div>
               <div v-else>
                 <Button @click="handleEdit(row, index)" size="small">操作</Button>
-                <Button @click="handleRemove(action.row.id)" size="small" type="error" >删除</Button>
+                <Button @click="handleRemove(row,index)" size="small" type="error" >删除</Button>
               </div>
-            </template> -->
+            </template>
           </Table>
         </template>
       </div>
     </Card>
     <Modal v-model="modal.show" :title="modal.title" @on-ok="addOK"
           :mask-closable="false">
-      <Form :model="modal.data" :label-width="80">
+      <Form :model="modal.data" :label-width="100" style="width:80%;">
         <FormItem label="名称">
           <Input v-model.trim="modal.data.name"></Input>
         </FormItem>
-        <FormItem label="所属学院专业">
-          <Select v-model.trim="modal.data.dictName"></Select>
+        <FormItem label="专业">
+          <Select v-model="modal.data.dictId">
+            <Option v-for="item in dictList" :value="item.id" :key="item.id">{{ item.dictName }}</Option>
+          </Select>
         </FormItem>
         <FormItem label="年级">
           <InputNumber :max="2900" :min="1900" v-model.trim="modal.data.period"></InputNumber>
@@ -91,26 +84,17 @@
             },
             {
               title:'分组名称',
-              key:'name',
-              render: (h, params) => {
-                if(editIndex === index){
-                  return h('div', [
-                    h('strong', params.row.name),
-                    h(Input,{
-                      props: {type: 'text',value:this.editName},
-                      on: { Input: (value) => { this.editName = value }}
-                    })
-                  ]);
-                }else{
-                  return h('div', [
-                    h('strong', params.row.name)
-                  ]);
-                }
-              }
+              slot:'className',
+              sortable: true
             },
             {
               title:'所属学院',
-              key:'dictName',
+              key:'institute',
+              sortable: true
+            },
+            {
+              title:'专业',
+              key:'profession',
               sortable: true
             },
             {
@@ -124,50 +108,21 @@
             },
             {
               title: '操作',
-              key: 'action',
+              slot: 'action',
               width: 150,
-              align: 'center',
-              render: (h, params) => {
-                return h('div', [
-                  // h('Button', {
-                    //   props: {
-                    //     type: 'primary',
-                    //     size: 'small'
-                    //   },
-                    //   style: {
-                    //     marginRight: '5px'
-                    //   },
-                    //   on: {
-                    //     click: () => {
-                    //       this.show(params.index)
-                    //     }
-                    //   }
-                  // }, '编辑'),
-                  h('Button', {
-                    props: {
-                      type: 'error',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.handleRemove(params.id)
-                      }
-                    }
-                  }, 'Delete')
-                ]);
-              }
+              align: 'center'
           }
         ],
-        editIndex:-1, // 当前聚焦的输入框的行数
+        editIndex: -1,  // 当前聚焦的输入框的行数
         editName: '',
-        dictNames:[],
+        dictList:[],
         modal:{
           show:false,
           title:'添加分组',
           data:{
             id:'',
             name:'',
-            dictName:'',
+            dictId:'',
             period: dayjs().year(),
             classNum:1
           }
@@ -184,10 +139,11 @@
             try {
                 let res1 = await post('/app/group/list')
                 this.datas = res1.data;
-                let res2 = await post('app/dictionary/listByCode/{dictCode}',null,{
+                console.info(res1.data)
+                let res2 = await post('system/dictionary/list/{dictCode}',null,{
                   dictCode:'INSTITUTE'
                 })
-                this.dictNames = res2.data;
+                this.dictList = res2.data;
             } catch (error) {
                 this.$throw(error)
             }
@@ -213,13 +169,12 @@
         async editOk(data){
           this.$Message.loading({
               content:"分组更新中...",
-              duration:0
+              duration:1.5
           })
           try {
               await post('/app/group/update/{id}',data,{
                   id:data.id
               })
-              this.getData(false)
               this.$Message.destroy()
               this.$Message.success({
                   content:"资源更新成功",
@@ -233,7 +188,7 @@
             this.setting.loading = true;
             this.$Message.loading({
                 content:"资源删除中...",
-                duration:0
+                duration:1.5
             })
             try {
                 await post('/app/group/remove/{id}',null,{
@@ -263,17 +218,17 @@
             this.modal.show = true;
         },
         handleEdit (row, index) {
-          this.editName = row.name;
+          this.editName = row.className;
           this.editIndex = index;
         },
         handleSave (index) {
-          this.data[index].name = this.editName;
+          this.datas[index].className = this.editName;
           this.editIndex = -1;
-          this.editOk(this.data[index]);
+          this.editOk(this.datas[index]);
         },
-        handleRemove (id) {
+        handleRemove (row,index) {
           this.removeModal = true;
-          this.removeObject = id;
+          this.removeObject = row.id;
         }
     }
   }

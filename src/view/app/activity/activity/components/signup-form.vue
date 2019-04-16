@@ -193,7 +193,7 @@ export default {
     handleClose (event, name) {
         const index = this.titles.indexOf(name);
         this.titles.splice(index, 1);
-        this.selectTitles.splice(index,1);
+        // this.selectTitles.splice(index,1);
         this.rules.splice(index + 1,1);
     },
     returntitle(){

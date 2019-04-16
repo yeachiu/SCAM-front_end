@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Modal v-model="show" title="添加部门" :mask-closable="false" :closable="false">
-      <Form ref="modalForm" :model="data" :rules="ruls"
-                  :label-width="80" style="width:80%;">
+    <Modal v-model="show" title="添加学生信息" :mask-closable="false" :closable="false">
+      <Form ref="modalForm" :model="data" :rules="rules"
+                  :label-width="80">
         <FormItem label="姓名" prop="realName">
           <Input v-model.trim="data.realName"></Input>
         </FormItem>
@@ -10,10 +10,10 @@
           <Input v-model.trim="data.stuNum"></Input>
         </FormItem>
         <FormItem label="专业" prop="dictId">
-          <Select v-model="data.dictId">
+          <Select v-model="data.dictId" style="width:200px">
             <Option v-for="item in dictList" :value="item.id" :key="item.id">{{ item.dictName }}</Option>
           </Select>
-        </FormItem> 
+        </FormItem>
         <FormItem label="年级">
           <InputNumber :max="2900" :min="1900" v-model.trim="data.period"></InputNumber>
         </FormItem>
@@ -43,21 +43,36 @@ export default {
         stuNum: "",
         dictId: "",
         period: dayjs().year(),
-        classNum:1,
-        dictList:[]
+        whatClass:1
       },
-      ruls: {
+      rules: {
         realName: [{ required: true, message: "姓名不能为空" }],
         stuNum: [{ required: true, message: "学号不能为空" }],
         dictId: [{ required: true, message: "请选择专业" }]
       },
-      options: []
+      options: [],
+      dictList:[]
     };
   },
   props: {
-    
+
+  },
+  created(){
+    this.getData();
   },
   methods: {
+    async getData(){
+      this.loading = true;
+      try {
+          let res = await post('system/dictionary/list/{dictCode}',null,{
+            dictCode:'INSTITUTE'
+          })
+          this.dictList = res.data;
+      } catch (error) {
+          this.$throw(error)
+      }
+      this.loading = false;
+    },
     /**
      * @description 关闭Modal
      * @param reload 是否重新加载数据
@@ -82,39 +97,43 @@ export default {
     async add(data){
       this.loading = true;
       try {
-        let res = await post('/app/apartment/add',data)
-        this.$Message.success("部门 "+data.name+" 添加成功");
+        let res = await post('/app/student/add',data)
+        this.$Message.destroy()
+        this.$Message.success({
+            content:"学生 "+data.realName+" 添加成功",
+            duration: 1.5
+        });
         this.cancel(true)
       } catch (error) {
         this.$throw(error)
       }
       this.loading = false;
     },
-    async  findAllStudent (query) {
-      if (query !== '') {
-        this.loading = true;
-        try {
-          let res = await post('/app/student/list')
-          this.lists = res.data;
-        } catch (error) {
-          this.$throw(error)
-        }
-        setTimeout(() => {
-          this.loading = false;
-          const list = this.lists.map(item => {
-            return {
-              id: item.id,
-              realName: item.realName,
-              whatClass: item.whatClass
-            };
-          });
-          this.options = list.filter(item => item.realName.toLowerCase().indexOf(query.toLowerCase()) > -1
-            || item.whatClass.toLowerCase().indexOf(query.toLowerCase()) > -1);
-        }, 200);
-      } else {
-        this.options = [];
-      }
-    },
+    // async  findAllStudent (query) {
+    //   if (query !== '') {
+    //     this.loading = true;
+    //     try {
+    //       let res = await post('/app/student/list')
+    //       this.lists = res.data;
+    //     } catch (error) {
+    //       this.$throw(error)
+    //     }
+    //     setTimeout(() => {
+    //       this.loading = false;
+    //       const list = this.lists.map(item => {
+    //         return {
+    //           id: item.id,
+    //           realName: item.realName,
+    //           whatClass: item.whatClass
+    //         };
+    //       });
+    //       this.options = list.filter(item => item.realName.toLowerCase().indexOf(query.toLowerCase()) > -1
+    //         || item.whatClass.toLowerCase().indexOf(query.toLowerCase()) > -1);
+    //     }, 200);
+    //   } else {
+    //     this.options = [];
+    //   }
+    // },
   }
 };
 </script>

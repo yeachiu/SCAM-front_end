@@ -27,7 +27,7 @@
       </div>
     </Card>
     <AddApartment v-if="addApartmentModal"  @cancel="onAddApartmentModalCancel"/>
-    <UpdateApartment v-if="updateApartmentModal" :update-object="updateObject" @cancel="onUpdateApartmentModalCancel"/>
+    <UpdateApartment v-if="updateApartmentModal" :updateObject="updateObject" @cancel="onUpdateApartmentModalCancel"/>
     <Modal v-model="removeModal" width="360">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="information-circled"></Icon>
@@ -129,7 +129,13 @@
             pageSize:10
         },
         removeObject:null,
-        allMember:null
+        allMember:null,
+        // member:[
+        //       {id:'1111111233',realName:'邱XX',whatClass:'15信息管理1班',stuNum:'1562852555545',phone:'12356489611'},
+        //       {id:'1111111333',realName:'陈XX',whatClass:'15信息管理1班',stuNum:'1562852555534',phone:'12356489658'},
+        //       {id:'1111111433',realName:'刘XX',whatClass:'15信息管理1班',stuNum:'1562852555586',phone:'12356489532'},
+        //       {id:'11111233',realName:'部门管理员',whatClass:'15信息管理1班',stuNum:'1562852555545',phone:'12356489611'}
+        //     ]
       }
     },
     components: {
@@ -165,7 +171,7 @@
         }
         this.setting.loading = true;
         try {
-          let res = await post('/system/apartment/remove/{id}',null,{
+          let res = await post('/app/apartment/remove/{id}',null,{
             id: this.removeObject.obj.id
           })
           this.$Message.success("删除成功");
@@ -178,7 +184,7 @@
       async getData(){
         this.setting.loading = true;
         try {
-          let res = await post('/system/apartment/list',{
+          let res = await post('/app/apartment/list',{
             page:this.dataFilter.page,
             pageSize:this.dataFilter.pageSize
           })
@@ -204,11 +210,10 @@
         this.updateApartmentModal = false;
         if(up) this.getData()
       },
-      async showAllResource(row){
+      async showAllMember(row){
         this.getAllMember(row.id);
           let members = this.allMember;
-          console.info('typeof::'+typeof(members));
-          if(members != null && typeof(members)=="Array" && members.length > 0){
+          if(members != null && members instanceof Array && members.length > 0){
             this.$Modal.info({
               title: row.name+' - 成员',
               width:'40%',
@@ -217,7 +222,7 @@
                 members.forEach(element => {
                     let r = h('Tag',{
                         props:{
-                          color:'green',
+                          color:'#19be6b',
                           type:'dot',
                         }
                     },element.realName);
@@ -239,7 +244,7 @@
       exportData(type){
           if (type === 1) {
               this.$refs.table.exportCsv({
-                  filename: '权限数据-'+new Date().getTime(),
+                  filename: '部门数据-'+new Date().getTime(),
                   columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
                   data: this.data
               });

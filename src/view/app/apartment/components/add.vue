@@ -11,7 +11,7 @@
         </FormItem>
         <FormItem label="管理员">
           <Select v-model="data.apartAdmin" filterable remote :remote-method="findAllStudent" :loading="loading">
-            <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.whatClass}} - {{option.realName}}</Option>
+            <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.className}} - {{option.realName}}</Option>
           </Select>
         </FormItem>
       </Form>
@@ -35,14 +35,12 @@ export default {
         apartAdmin: "",
       },
       ruls: {
-        name: [
-            { required: true, message: "部门名称不能为空" },
-            {pattern:/^(\w){4,16}$/,message:'部门名称应为[A-Za-z0-9_]组成的4-16位字符'}
-        ],
+        name: [{ required: true, message: "部门名称不能为空" }],
         about: [{ required: true, message: "部门简介不能为空" }],
         apartAdmin: [{ required: true, message: "请选择一个部门管理员" }]
       },
-      options: []
+      options: [],
+      lists: []
     };
   },
   props: {
@@ -85,7 +83,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/app/student/list')
+          let res = await post('/app/student/alllist')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)
@@ -96,17 +94,29 @@ export default {
             return {
               id: item.id,
               realName: item.realName,
-              whatClass: item.whatClass
+              whatClass: item.groupVO.whatClass,
+              className:item.groupVO.className
             };
           });
-          this.options = list.filter(item => item.realName.toLowerCase().indexOf(query.toLowerCase()) > -1
-            || item.whatClass.toLowerCase().indexOf(query.toLowerCase()) > -1);
+         
+          list.forEach(ele => {
+
+            if(ele.realName.toLowerCase().indexOf(query.toLowerCase()) > -1 ){
+              this.options.push(ele);  
+            }else if(ele.className.toLowerCase().indexOf(query.toLowerCase()) > -1){
+              this.options.push(ele);
+            }
+          });
+          
+            // return result;
+          // }
+          
         }, 200);
       } else {
         this.options = [];
       }
     },
+    
   }
 };
 </script>
-

@@ -1,29 +1,23 @@
 <template>
   <div>
-    <Modal v-model="show" title="更新用户"
+    <Modal v-model="show" title="更新部门信息"
             :mask-closable="false" :closable="false">
         <Form ref="modalForm" :model="data" :rules="ruls"
                     :label-width="80">
             <FormItem label="ID">
                 <Input disabled v-model.trim="data.id"></Input>
             </FormItem>
-            <FormItem label="用户名" prop="username">
-                <Input v-model.trim="data.username"></Input>
-            </FormItem>
-            <FormItem label="年龄" prop="age">
-                <InputNumber :min="0" :step="1" v-model.trim="data.age" style="width:100%"/>
-            </FormItem>
-            <FormItem label="状态" prop="status">
-                <Select v-model.trim="data.status" style="width:100%">
-                    <Option v-for="item in [{label:'正常',value:1},{label:'锁定',value:0}]"
-                        :value="item.value" :key="item.value">{{ item.label }}</Option>
-                </Select>
-            </FormItem>
-            <FormItem label="角色组" prop="roles">
-                <CheckboxGroup v-model="data.roles">
-                    <Checkbox v-for="(item,index) in roles" :label="index" :key="item.id">{{item.name}}</Checkbox>
-                </CheckboxGroup>
-            </FormItem>
+        <FormItem label="名称" prop="name">
+          <Input v-model.trim="data.name"></Input>
+        </FormItem>
+        <FormItem label="简介" prop="about">
+          <Input v-model="data.about" type="textarea" :autosize="{minRows: 3,maxRows: 5}" placeholder="Enter something..."></Input>
+        </FormItem>
+        <FormItem label="管理员">
+          <Select v-model="data.apartAdmin" filterable remote :remote-method="findAllStudent" :loading="loading" :placeholder="data.adminName">
+            <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.className}} - {{option.realName}}</Option>
+          </Select>
+        </FormItem>
         </Form>
         <div slot="footer">
             <Button type="default" :disabled="loading" @click="cancel(false)">取消</Button>
@@ -41,34 +35,34 @@ export default {
       loading: false,
       data: {
         id:0,
-        username: "",
-        age: 0,
-        status: 1,
-        roles: []
+        name: '',
+        about: '',
+        apartAdmin: '',
+        adminName:''
       },
       ruls: {
-        username: [
-            { required: true, message: "用户名不能为空" },
-            {pattern:/^(\w){4,16}$/,message:'用户名应为[A-Za-z0-9_]组成的4-16位字符'}
-        ],
-        age: [{ required: true, message: "年龄不能为空" }],
-        status: [{ required: true, message: "用户状态不能为空" }],
-        roles: [{ required: true, message: "请至少选择一个角色" }]
-      }
+        name: [{ required: true, message: "部门名称不能为空" }],
+        about: [{ required: true, message: "部门简介不能为空" }],
+        apartAdmin: [{ required: true, message: "请选择一个部门管理员" }]
+      },
+      options:[]
     };
   },
   props: {
-    roles: {
-      type: Array,
-      default: []
-    },
-    uid:{
+    updateObject:{
         type:String,
         default:{}
     }
   },
   created(){
-      this.getUserInfo();
+    //   this.getApartmentInfo();
+    if(this.updateObject != null){
+        this.data.id = this.updateObject.id;
+        this.data.name = this.updateObject.name;
+        this.data.about = this.updateObject.about;
+        // this.data.apartAdmin = this.updateObject.apartAdmin.id;
+        this.data.adminName = this.updateObject.apartAdmin.realName;
+    }
   },
   methods: {
     /**
@@ -79,26 +73,22 @@ export default {
       this.$emit("cancel", "update", reload);
     },
     /**
-     * @description 获取用户信息
+     * @description 获取部门信息
      */
-    async getUserInfo(){
+    async getApartmentInfo(){
         try {
-            let res = await post('/system/user/get/id/{id}',null,{
-                id:this.uid
+            let res = await post('/app/apartment/get/id/{id}',null,{
+                id:this.aparId
             })
-            this.data = res.data;
-            //进行角色的匹配
-            let roles = []
-            if(this.data.roles!=null){
-                this.data.roles.forEach(el=>{
-                    this.roles.forEach((r,index)=>{
-                        if(el.id == r.id){ //判断当前用户角色列表中的角色ID是否和全部角色列表中的对应
-                            roles.push(index) //对应则加入当前角色的数组下标
-                        }
-                    })
-                })
-            }
-            this.data.roles = roles;
+            this.data = res.data.map(item => {
+            return {
+              id: item.id,
+              name: item.name,
+              about:item.about,
+              apartAdmin: item.apartAdmin.id,
+              adminName:item.apartAdmin.realName
+            };
+          });
         } catch (error) {
             this.$throw(error)
         }
@@ -134,8 +124,39 @@ export default {
             this.$throw(error)
         }
         this.loading = false;
-    }
+    },
+    async  findAllStudent (query) {
+      if (query !== '') {
+        this.loading = true;
+        try {
+          let res = await post('/app/student/alllist')
+          this.lists = res.data;
+        } catch (error) {
+          this.$throw(error)
+        }
+        setTimeout(() => {
+          this.loading = false;
+          this.options = [];
+          const list = this.lists.map(item => {
+            return {
+              id: item.id,
+              realName: item.realName,
+              whatClass: item.groupVO.whatClass,
+              className:item.groupVO.className
+            };
+          });
+          list.forEach(ele => {
+            if(ele.realName.toLowerCase().indexOf(query.toLowerCase()) > -1 ){
+              this.options.push(ele);  
+            }else if(ele.className.toLowerCase().indexOf(query.toLowerCase()) > -1){
+              this.options.push(ele);
+            }
+          });
+        }, 200);
+      } else {
+        this.options = [];
+      }
+    },
   }
 };
 </script>
-

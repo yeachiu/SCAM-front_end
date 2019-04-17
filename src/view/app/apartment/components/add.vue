@@ -100,7 +100,6 @@ export default {
           });
          
           list.forEach(ele => {
-
             if(ele.realName.toLowerCase().indexOf(query.toLowerCase()) > -1 ){
               this.options.push(ele);  
             }else if(ele.className.toLowerCase().indexOf(query.toLowerCase()) > -1){
@@ -120,3 +119,4 @@ export default {
   }
 };
 </script>
+

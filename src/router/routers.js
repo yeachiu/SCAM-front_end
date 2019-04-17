@@ -146,7 +146,7 @@ export default [
     },
     children:[
       { 
-        path: '/index',
+        path: '/index:id',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '部门主页',
@@ -164,7 +164,7 @@ export default [
         name: 'apartment_manage', component: () => import('@/view/app/apartment/manage.vue') 
       },
       { 
-        path: 'member',
+        path: '/member:id',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '成员管理',
@@ -173,7 +173,7 @@ export default [
         name: 'apartment_member', component: () => import('@/view/app/apartment/member.vue') 
       },
       { 
-        path: 'group',
+        path: 'group:id',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '分组管理',

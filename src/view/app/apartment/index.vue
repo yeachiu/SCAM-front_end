@@ -74,6 +74,7 @@
     export default {
       data () {
         return {
+          aparId:'',
           apartmentData:{
             id:'111111',
             name:'舒雪吉部门',
@@ -100,6 +101,7 @@
       components:{
       },
       created(){
+        this.aparId = this.$route.params.id;
         this.getData();
       },
       methods:{

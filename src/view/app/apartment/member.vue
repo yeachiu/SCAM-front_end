@@ -20,7 +20,7 @@
                         </Col>
                     </Row>
                     <Table ref="table"  class="margin-bottom-10"
-                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data"></Table>
+                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data.records"></Table>
                 </template>
             </div>
         </Card>
@@ -36,23 +36,18 @@
                 <Button type="error" size="large" long :loading="setting.loading" @click="removeMember">确认删除</Button>
             </div>
         </Modal>
-        <AddMember v-if="addMemberModal" :roles="roles" @cancel="onModalCancel"/>
-        <UpdateMember v-if="updateMemberModal" :roles="roles" :uid="updateMemberId" @cancel="onModalCancel"/>
+        <AddMember v-if="addMemberModal" :aparId="aparId" @cancel="onModalCancel"/>
     </div>
 </template>
 <script>
     import dayjs from 'dayjs'
     import { post } from '@/libs/axios-cfg'
-    import AddMember from './components/add.vue'
-    import UpdateMember from './components/update.vue'
+    import AddMember from './components/addMember.vue'
     export default {
         data () {
             return {
+                aparId:'',
                 addMemberModal:false,
-                updateMemberModal:false,
-                updateMemberId:null,
-                // selections:[],
-                apartmentId:null,
                 removeModal:false,
                 setting:{
                     loading:true,
@@ -100,15 +95,15 @@
                         align: 'center',
                         render: (h, params) => {
                             return h('div', [
-                                h('Button', {
-                                    props: {type: 'primary',size: 'small'},
-                                    style: {marginRight: '5px'},
-                                    on:{
-                                        click:()=>{
-                                            this.openAddModal(params.row.id)
-                                        }
-                                    }
-                                }, '修改'),
+                                // h('Button', {
+                                //     props: {type: 'primary',size: 'small'},
+                                //     style: {marginRight: '5px'},
+                                //     on:{
+                                //         click:()=>{
+                                //             this.openAddModal(params.row.id)
+                                //         }
+                                //     }
+                                // }, '修改'),
                                 h('Button', {
                                     props: {type: 'error',size: 'small'},
                                     on:{
@@ -168,9 +163,11 @@
             }
         },
         components:{
-            AddMember,UpdateMember
+            AddMember
         },
         created(){
+            // this.aparId = this.$route.params.id;
+            this.aparId = '1118329040784252929';
             this.getData();
         },
         methods:{
@@ -200,28 +197,15 @@
              */
             async getData(){
                 this.setting.loading = true;
-                //接口尚未开放 ……&*
-                // try {
-                //     let res = await post('/app/apartment/member/list/{id}',null,{
-                //         id:this.apartmentId
-                //     })
-                //     this.data = res.data;
-                // } catch (error) {
-                //     this.$throw(error)
-                // }
-                this.setting.loading = false;
-            },
-            /**
-             * @description 获取参与活动列表
-             */
-            async getActivityList(){
                 try {
-                    let res = await post('/app/activity/list',{                 
+                    let res = await post('/app/apartment/member/list/{id}',null,{
+                        id:this.aparId
                     })
-                    this.activities = res.data;
+                    this.data = res.data;
                 } catch (error) {
                     this.$throw(error)
                 }
+                this.setting.loading = false;
             },
              /**
              * @description 打开模态窗口
@@ -229,13 +213,9 @@
              * @param type 打开类型
              */
             openAddModal(uid){
-              if(uid==null || type==='update'){
-                if(this.activities == null){
-                  this.getActivityList();
-                }
-              }  
-              this.updateMemberId = uid;
-              this.updateMemberModal = true;                
+              if(uid==null){
+                this.addMemberModal = true;
+              }              
             },
             /**
              * @description 关闭模态窗口
@@ -243,7 +223,7 @@
              * @param reload 是否重新加载数据
              */
             onModalCancel(reload = false){
-                this.updateMemberModal = false;
+                this.addMemberModal = false;
                 if(reload) this.getData();
             },
             /**

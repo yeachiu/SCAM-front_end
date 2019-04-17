@@ -10,7 +10,7 @@
                     <Input v-model.trim="formData.stuNum"></Input>
                 </FormItem>
                 <FormItem label="专业" prop="dictId">
-                <Select v-model="formData.dictId">
+                <Select v-model="formData.dictId" :placeholder="formData.profession">
                     <Option v-for="item in dictList" :value="item.id" :key="item.id">{{ item.dictName }}</Option>
                 </Select>
                 </FormItem> 
@@ -40,7 +40,8 @@ export default {
                 stuNum: '',
                 dictId: '',
                 period: dayjs().year(),
-                whatClass:1
+                whatClass:1,
+                profession:''
             },
             showModal:true,
             loading: false,
@@ -63,7 +64,8 @@ export default {
         if(this.updateObject!=null){
             this.formData.realName = this.updateObject.realName;
             this.formData.stuNum = this.updateObject.stuNum;
-            this.formData.dictId = this.updateObject.groupVO.profession;
+            this.formData.dictId = this.updateObject.groupVO.dictId;
+            this.formData.profession = this.updateObject.groupVO.profession;
             this.formData.period = this.updateObject.groupVO.period;
             this.formData.whatClass = this.updateObject.groupVO.whatClass;
         }
@@ -103,24 +105,27 @@ export default {
                         period: this.formData.period,
                         whatClass: this.formData.whatClass
                     }
-                
+                    console.log('ok')
                     this.update(postObj)
                 // }
             }
         })
       },
       async update(data){
+          console.info(data)
         this.loading = true;
         try {
+            console.log('post')
             let res = await post('/app/group/exist',data)
             let bool = res.data;
+            console.info('bool'+bool)
             if(bool){
                 let res = await post('/app/student/update/{id}',data,{
                     id:this.updateObject.id
                 })
                 this.$Message.success("学生信息 "+data.realName+" 更新成功");
             }else{
-                this.isExist = false;
+                // this.isExist = false;
                 this.$Message.error("暂未有对应用户分组，请先添加");
             }
             this.cancel(true);        
@@ -147,4 +152,3 @@ export default {
   }
 }
 </script>
-

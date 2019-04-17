@@ -24,7 +24,7 @@
                 </template>
             </div>
         </Card>
-        <AddGroup v-if="addGroupModal" :allMember="allMember" :add-Id="apartmentId" @cancel="onAddGroupModalCancel"/>
+        <AddGroup v-if="addGroupModal" :allMember="allMember" :add-Id="aparId" @cancel="onAddGroupModalCancel"/>
         <UpdateGroup v-if="updateGroupModal" :allMember="allMember" :update-object="updateObject" @cancel="onUpdateGroupModalCancel"/>
         <Modal v-model="removeModal" width="360">
             <p slot="header" style="color:#f60;text-align:center">
@@ -47,7 +47,7 @@
     export default {
         data () {
             return {
-              apartmentId:'',
+              aparId:'',
               addGroupModal:false,
               updateGroupModal:false,
               updateObject:null,
@@ -146,7 +146,7 @@
             async getAllMember(){
                 // try {
                 //     let res = await post('/app/apartment/member/list/{id}',null,{
-                //       id:this.apartmentId
+                //       id:this.aparId
                 //     })
                 //     this.allMember = res.data;
                 // } catch (error) {
@@ -186,7 +186,7 @@
                 //接口暂未开放 ……&*
                 // try {
                 //     let res = await post('/app/apartment/group/list/{id}',null,{
-                //         id:this.apartmentId
+                //         id:this.aparId
                 //     })
                 //     this.data = res.data;
                 // } catch (error) {

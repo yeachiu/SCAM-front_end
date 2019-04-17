@@ -50,7 +50,7 @@ export default {
   },
   props: {
     updateObject:{
-        type:String,
+        type:Object,
         default:{}
     }
   },
@@ -97,28 +97,21 @@ export default {
      * @description 确定按钮单击回调
      */
     ok() {
-      this.$refs.modalForm.validate(valid => {
-        if (valid) {
-            let roles = []
-            this.data.roles.forEach(el=>{
-                roles.push(this.roles[el]);
-            })
-            let data = JSON.parse(JSON.stringify(this.data));
-            data.roles = roles;
-            this.update(data)
-        }
-      });
+        this.update(this.data)
     },
     /**
      * @description 更新用户数据请求
      */
     async update(data){
         this.loading = true;
+        if(data.apartAdmin == ''){
+            data.apartAdmin = this.updateObject.apartAdmin.id;
+        }
         try {
-            let res = await post('/system/user/update/{id}',data,{
+            let res = await post('/app/apartment/update/{id}',data,{
                 id:this.data.id
             })
-            this.$Message.success("用户 "+data.username+" 更新成功");
+            this.$Message.success("部门信息 "+data.name+" 更新成功");
             this.cancel(true)
         } catch (error) {
             this.$throw(error)
@@ -160,3 +153,4 @@ export default {
   }
 };
 </script>
+

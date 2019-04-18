@@ -6,7 +6,7 @@
         <FormItem label="名称" prop="name">
           <Input v-model.trim="data.name"></Input>
         </FormItem>
-        <FormItem label="简介" prop="about">
+        <FormItem label="职能简介" prop="about">
           <Input v-model="data.about" type="textarea" :autosize="{minRows: 3,maxRows: 5}" placeholder="Enter something..."></Input>
         </FormItem>
         <FormItem label="管理员">
@@ -83,12 +83,13 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/app/student/alllist')
+          let res = await post('/app/student/listExAdmin')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)
         }
         setTimeout(() => {
+          this.options = [];
           this.loading = false;
           const list = this.lists.map(item => {
             return {

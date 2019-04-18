@@ -20,7 +20,7 @@
                         </Col>
                     </Row>
                     <Table ref="table"  class="margin-bottom-10"
-                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data.records"></Table>
+                         :columns="columns" :loading="setting.loading"  :border="setting.showBorder" :data="data"></Table>
                 </template>
             </div>
         </Card>
@@ -58,9 +58,30 @@
                     value:''
                 },
                 columns: [
-                    {title: 'ID', key: 'id',sortable: true},
-                    {title: '姓名', key: 'realName',sortable: true},
-                    {title: '班级',key: 'whatClass',sortable: true},
+                    {
+                      title: '学号', 
+                      key: 'stuNum',
+                      render:(h,params)=>{
+                        return h('span',params.row.member.stuNum)
+                      },
+                      sortable: true
+                    },
+                    {
+                      title: '姓名', 
+                      key: 'realName',
+                      render:(h,params)=>{
+                        return h('span',params.row.member.realName)
+                      },
+                      sortable: true
+                    },
+                    {
+                      title: '班级',
+                      key: 'className',
+                      render:(h,params)=>{
+                        return h('span',params.row.member.groupVO.className)
+                      },
+                      sortable: true
+                    },
                     {
                         title: '跟进的活动',
                         key: 'activities', 
@@ -82,9 +103,9 @@
                     },
                     {
                         title: '加入日期',
-                        key: 'createDate',
+                        key: 'createTime',
                         render:(h,params)=>{
-                            return h('span',dayjs(params.row.createDate).format('YYYY年MM月DD日 HH:mm:ss'))
+                            return h('span',dayjs(params.row.createTime).format('YYYY年MM月DD日 HH:mm:ss'))
                         },
                         sortable: true
                     },
@@ -120,40 +141,7 @@
                         }
                     }
                 ],
-                data: [
-                  {
-                    id:'111111',
-                    realName:'科别拉',
-                    whatClass:'15信管1班',
-                    activities:[
-                      {
-                        id:'00100',
-                        title:'地球一小时'
-                      },
-                      {
-                        id:'00200',
-                        title:'活动一'
-                      }
-                    ],
-                    createDate:'2019-02-23 09:03:37'
-                  },
-                  {
-                    id:'111365',
-                    realName:'系统管理员',
-                    whatClass:'15信管1班',
-                    activities:[
-                      {
-                        id:'00100',
-                        title:'地球一小时'
-                      },
-                      {
-                        id:'00200',
-                        title:'活动一'
-                      }
-                    ],
-                    createDate:'2019-01-03 19:03:37'
-                  },
-                ],
+                data: [],
                 dataFilter:{
                     page:1,
                     pageSize:10
@@ -167,7 +155,7 @@
         },
         created(){
             // this.aparId = this.$route.params.id;
-            this.aparId = '1118329040784252929';
+            this.aparId = '1118863334049951745';
             this.getData();
         },
         methods:{
@@ -182,8 +170,8 @@
                 }
                 this.setting.loading = true;
                 try {
-                    let res = await post('/app/apartment/removeMember/{uid}',null,{
-                        uid: this.removeObject.obj.id
+                    let res = await post('/app/apartment/member/remove/{id}',null,{
+                        id: this.removeObject.obj.id
                     })
                     this.$Message.success("删除成功");
                     this.data.splice(this.removeObject.index,1);
@@ -201,6 +189,17 @@
                     let res = await post('/app/apartment/member/list/{id}',null,{
                         id:this.aparId
                     })
+                    this.data = res.data;
+                    // if(res.data != null){
+                    //   let result = res.data;
+                    //   this.data = {
+                    //     stuNum: result.member.stuNum,
+                    //     realName: result.member.realName,
+                    //     className: result.member.className,
+                    //     activities:result.activities,
+                    //     createTime:result.createTime
+                    //   }
+                    // }
                     this.data = res.data;
                 } catch (error) {
                     this.$throw(error)

@@ -6,7 +6,7 @@
         <FormItem label="部门">
           <Input disabled v-model.trim="data.aparId"></Input>
         </FormItem>
-        <FormItem label="管理员">
+        <FormItem label="成员" prop="uid">
           <Select v-model="data.uid" filterable remote :remote-method="findAllStudent" :loading="loading">
             <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.className}} - {{option.realName}}</Option>
           </Select>
@@ -61,7 +61,7 @@ export default {
     /**
      * @description 确定按钮单击回调
      */
-    ok() {
+    ok() {     
       this.$refs.modalForm.validate(valid => {
         if (valid) {
             let data = JSON.parse(JSON.stringify(this.data));
@@ -87,7 +87,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/app/student/alllist')
+          let res = await post('/app/student/listExAdmin')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)

@@ -122,7 +122,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/app/student/alllist')
+          let res = await post('/app/student/listExAdmin')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)

@@ -129,13 +129,7 @@
             pageSize:10
         },
         removeObject:null,
-        allMember:null,
-        // member:[
-        //       {id:'1111111233',realName:'邱XX',whatClass:'15信息管理1班',stuNum:'1562852555545',phone:'12356489611'},
-        //       {id:'1111111333',realName:'陈XX',whatClass:'15信息管理1班',stuNum:'1562852555534',phone:'12356489658'},
-        //       {id:'1111111433',realName:'刘XX',whatClass:'15信息管理1班',stuNum:'1562852555586',phone:'12356489532'},
-        //       {id:'11111233',realName:'部门管理员',whatClass:'15信息管理1班',stuNum:'1562852555545',phone:'12356489611'}
-        //     ]
+        allMember:null
       }
     },
     components: {

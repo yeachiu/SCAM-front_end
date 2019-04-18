@@ -80,15 +80,13 @@ export default {
     const validateDate = (rule,value,callback) =>  {
       if (value === null) {
         callback(new Error('Please select the DateTime'));
-      }
-      
+      }     
       value.forEach((r,index)=>{
-          if(r === ""){ 
-              callback(new Error('Please select the DateTime'));
-          }
-      })
-      
-        callback();
+        if(r === ""){ 
+          callback(new Error('Please select the DateTime'));
+        }
+      })  
+      callback();
     };
     return{
       formItem: {
@@ -123,128 +121,14 @@ export default {
       loading: false,
       options: [],
       list: [],
-      end_code: [],
-      end_codes: [
-                  {
-                    value: 1000,
-                    label: "数学系",
-                    multiple: true,
-                    children: [
-                      {
-                        value: 1100,
-                        label:'信管专业',
-                        multiple: true, //可忽略项，当为true时该项为多选
-                        children: [
-                          {
-                            value:1110,
-                            label: '15级',
-                            multiple:true,
-                            children:[
-                              {value:1111,label: '信管1班',multiple:true}
-                            ]
-                          },
-                          {
-                            value:1120,
-                            label: '16级',
-                            multiple:true,
-                            children:[
-                              
-                            ]
-                          }
-                        ]                  
-                      },
-                      {
-                        value:1200,
-                        label: '数学专业',
-                        multiple:true,
-                        children:[
-                          {
-                            value:1210,
-                            label: '15级',
-                            multiple:true,
-                            children:[
-                              {value:1211,label: '数学1班',multiple:true},
-                              {value:1212,label: '数学2班',multiple:true},
-                              {value:1213,label: '数学3班',multiple:true}
-                            ]
-                          },
-                          {
-                            value:1220,
-                            label: '16级',
-                            multiple:true,
-                            children:[
-                              
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    value: 1000,
-                    label: "建土系",
-                    multiple: true,
-                    children: [
-                      {
-                        value: 1100,
-                        label:'建筑专业',
-                        multiple: true, //可忽略项，当为true时该项为多选
-                        children: [
-                          {
-                            value:1110,
-                            label: '15级',
-                            multiple:true,
-                            children:[
-                              {value:1111,label: '建筑1班',multiple:true}
-                            ]
-                          },
-                          {
-                            value:1120,
-                            label: '16级',
-                            multiple:true,
-                            children:[
-                              
-                            ]
-                          }
-                        ]                  
-                      },
-                      {
-                        value:1200,
-                        label: '土木专业',
-                        multiple:true,
-                        children:[
-                          {
-                            value:1210,
-                            label: '15级',
-                            multiple:true,
-                            children:[
-                              {value:1211,label: '土木1班',multiple:true},
-                              {value:1212,label: '土木2班',multiple:true},
-                              {value:1213,label: '土木3班',multiple:true}
-                            ]
-                          },
-                          {
-                            value:1220,
-                            label: '16级',
-                            multiple:true,
-                            children:[
-                              
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
       selectGroupModal:false
     }
   },
   props:{
-    apartmentId:String,
-    // user: {
-    //   type: Object,
-    //   default: {}
-    // }
+    aparId:{
+      type:String,
+      default:{}
+    }
   },
   components:{
     SelectGroup

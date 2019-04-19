@@ -61,7 +61,7 @@
                     {
                       title: '学号', 
                       key: 'stuNum',
-                      render:(h,params)=>{
+                      render:(h,params)=>{  
                         return h('span',params.row.member.stuNum)
                       },
                       sortable: true
@@ -78,7 +78,7 @@
                       title: '班级',
                       key: 'className',
                       render:(h,params)=>{
-                        return h('span',params.row.member.groupVO.className)
+                        return h('span',params.row.member.className)
                       },
                       sortable: true
                     },
@@ -115,29 +115,31 @@
                         width: 260,
                         align: 'center',
                         render: (h, params) => {
-                            return h('div', [
-                                // h('Button', {
-                                //     props: {type: 'primary',size: 'small'},
-                                //     style: {marginRight: '5px'},
-                                //     on:{
-                                //         click:()=>{
-                                //             this.openAddModal(params.row.id)
-                                //         }
-                                //     }
-                                // }, '修改'),
-                                h('Button', {
-                                    props: {type: 'error',size: 'small'},
-                                    on:{
-                                        click:()=>{
-                                            this.removeObject = {
-                                                obj:params.row,
-                                                index:params.index
+                            if(params.row.isadmin === 1){
+                                return h('div', [
+                                    // h('Button', {
+                                    //     props: {type: 'primary',size: 'small'},
+                                    //     style: {marginRight: '5px'},
+                                    //     on:{
+                                    //         click:()=>{
+                                    //             this.openAddModal(params.row.id)
+                                    //         }
+                                    //     }
+                                    // }, '修改'),
+                                    h('Button', {
+                                        props: {type: 'error',size: 'small'},
+                                        on:{
+                                            click:()=>{
+                                                this.removeObject = {
+                                                    obj:params.row,
+                                                    index:params.index
+                                                }
+                                                this.removeModal = true;
                                             }
-                                            this.removeModal = true;
                                         }
-                                    }
-                                }, '删除')
-                            ]);
+                                    }, '删除')
+                                ]);
+                            }
                         }
                     }
                 ],
@@ -189,17 +191,6 @@
                     let res = await post('/app/apartment/member/list/{id}',null,{
                         id:this.aparId
                     })
-                    this.data = res.data;
-                    // if(res.data != null){
-                    //   let result = res.data;
-                    //   this.data = {
-                    //     stuNum: result.member.stuNum,
-                    //     realName: result.member.realName,
-                    //     className: result.member.className,
-                    //     activities:result.activities,
-                    //     createTime:result.createTime
-                    //   }
-                    // }
                     this.data = res.data;
                 } catch (error) {
                     this.$throw(error)

@@ -122,7 +122,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/app/student/listExAdmin')
+          let res = await post('/system/user/auth/list/already/exadmin')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)
@@ -134,8 +134,8 @@ export default {
             return {
               id: item.id,
               realName: item.realName,
-              whatClass: item.groupVO.whatClass,
-              className:item.groupVO.className
+              whatClass: item.whatClass,
+              className:item.className
             };
           });
           list.forEach(ele => {
@@ -153,4 +153,3 @@ export default {
   }
 };
 </script>
-

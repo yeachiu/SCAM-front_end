@@ -87,7 +87,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/app/student/listExAdmin')
+          let res = await post('/app/user/auth/list/already/exadmin')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)
@@ -123,4 +123,3 @@ export default {
   }
 };
 </script>
-

@@ -132,6 +132,7 @@
             AddGroup,UpdateGroup
         },
         created(){
+            this.aparId = '1118863334049951745';
             this.getData();
         },
         methods:{
@@ -183,15 +184,14 @@
             },
             async getData(){
                 this.setting.loading = true;
-                //接口暂未开放 ……&*
-                // try {
-                //     let res = await post('/app/apartment/group/list/{id}',null,{
-                //         id:this.aparId
-                //     })
-                //     this.data = res.data;
-                // } catch (error) {
-                //     this.$throw(error)
-                // }
+                try {
+                    let res = await post('/app/apartment/group/list/{id}',null,{
+                        id:this.aparId
+                    })
+                    this.data = res.data;
+                } catch (error) {
+                    this.$throw(error)
+                }
                 this.setting.loading = false;
             },
             async openAddOrUpModal(obj,type = 'update'){

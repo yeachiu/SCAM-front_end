@@ -5,6 +5,8 @@ export default {
   state: {
     userName: '',
     userId: '',
+    aparId:'',
+    stuId:'',
     avatorImgPath: '',
     token: getToken(),
     access: ''
@@ -18,6 +20,12 @@ export default {
     },
     setUserName (state, name) {
       state.userName = name
+    },
+    setAparId (state, aparId) {
+      state.aparId = aparId
+    },
+    setStuId (state, stuId) {
+      state.stuId = stuId
     },
     setAccess (state, access) {
       state.access = access
@@ -43,6 +51,7 @@ export default {
       } catch (error) {
         errorHandler(error)
       }
+      
     }
   } 
 }

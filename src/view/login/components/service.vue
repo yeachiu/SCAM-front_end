@@ -75,12 +75,17 @@
                 });
                 try {
                     let res = await post('/account/sign-in',{
-                        username: this.formItem.account,
-                        password: this.formItem.password
+                      username: this.formItem.account,
+                      password: this.formItem.password
                     })
                     this.$Message.success("登录成功");
                     localStorage.setItem('csrf-token', res.data);
                     this.$store.commit('setToken', res.data);
+                    let resp = await post('/account/current')
+                    this.$store.commit('setUserId', resp.data.id);
+                    this.$store.commit('setUserName', resp.data.username);
+                    this.$store.commit('setAparId', resp.data.aparId);
+                    this.$store.commit('setStuId',resp.data.stuId);
                     this.$router.push({name: 'home'});
                 } catch (error) {
                     this.$throw(error)

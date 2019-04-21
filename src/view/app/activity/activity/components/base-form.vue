@@ -66,10 +66,10 @@
       </FormItem>
       <FormItem label="活动面向对象">
         <Button type="info" @click="selectGroupModal = true"><Icon type="md-add"></Icon>&nbsp;添加分组</Button>
-        <Tag v-for="item in formItem.groupId" :key="item.title" closable @on-close="handleClose">{{item.title}}</Tag>
+        <Tag v-for="item in formItem.groupId" :key="item.id" closable @on-close="handleClose">{{item.title}}</Tag>
       </FormItem>  
     </Form>
-    <SelectGroup v-if="selectGroupModal" :apartmentId="apartmentId" :checkeds="formItem.groupId" v-on:checkedNodes="getNodes" @cancel="onModalCancel"></SelectGroup>  
+    <SelectGroup v-if="selectGroupModal" :aparId="aparId" :checkeds="formItem.groupId" v-on:checkedNodes="getNodes" @cancel="onModalCancel"></SelectGroup>  
   </div>
 </template>
 <script>
@@ -172,22 +172,15 @@ export default {
       console.info(this.formItem);
     },
     getNodes(val){
-      // let groupIds = new Array();
-      // val.forEach(item => {
-      //     if(item.title != null && item.title != ''){
-      //       groupIds.push(item.title);
-      //     }
-      // });
+      
       this.formItem.groupId = val;
-      console.info(this.formItem.groupId);
     },
     async  findByApartmentId (query) {
       if (query !== '') {
         this.loading = true;
         try {
-          this.apartmentId = 'abcdefg';
           let res = await post('/app/apartment/member/list/{id}',null,{
-              id: this.apartmentId
+              id: this.aparId
           })
           this.lists = res.data;
         } catch (error) {
@@ -201,7 +194,6 @@ export default {
               label: item.username
             };
           });
-          console.info(list)
           this.options = list.filter(item => item.label.toLowerCase().indexOf(query.toLowerCase()) > -1);
         }, 200);
       } else {
@@ -209,7 +201,6 @@ export default {
       }
     },
     openModal(){
-      alert('openModal');
       this.selectGroupModal=true;
     },
     /**
@@ -227,16 +218,13 @@ export default {
     },
     changeSignupDate(date){
       this.formItem.datetimeSignup = date;
-      console.log(date)
     },
     changeActDate(date){
       this.formItem.datetimeAct = date;
-      console.log(date)
     }
   },
   mounted(){
     this.$on('submitBaseData',()=>{
-      console.log("老爹，base知道啦");
       this.$emit("submitData",this.formItem);
     })
   }

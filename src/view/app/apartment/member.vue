@@ -156,9 +156,8 @@
             AddMember
         },
         created(){
-            // this.aparId = this.$route.params.id;
-            this.aparId = '1118863334049951745';
-            this.getData();
+          this.aparId = this.$store.state.user.aparId;
+          this.getData();
         },
         methods:{
              /**

@@ -11,7 +11,7 @@
       </Steps>
       </p>   
       <Card :bordered="false" v-show = "current == 0"  dis-hover>
-        <BaseForm ref="baseForm" :apartmentId="apartmentId" :user="user" v-on:submitData="cacheBaseData" class="TabContent"/>
+        <BaseForm ref="baseForm" :aparId="aparId" :user="user" v-on:submitData="cacheBaseData" class="TabContent"/>
       </Card>
       <Card :bordered="false" v-show = "current == 1"  dis-hover>
         <SignupForm ref="signupForm" v-on:submitData="cacheSignupData" class="TabContent"/>
@@ -47,12 +47,14 @@ import ScoreSettingForm from '@/view/app/activity/activity/components/score-sett
 export default {
   data () {
     return {
+      dictId: '',
       show: true,
       loading:false,
       current: 0,
       baseDatas:{},
       scoreData:{},
       finalDatas:{
+        organizerId:'',
         pictureUrl: '',
         title: '',
         description: '',
@@ -75,6 +77,9 @@ export default {
   },
   components:{
     BaseForm,SignupForm,ScoreSettingForm
+  },
+  created(){
+    this.aparId = this.$store.state.user.aparId;
   },
   methods: {
     /**
@@ -99,10 +104,13 @@ export default {
       }
     },
     async save(type){
+      //从子组件获取表单数据
       this.$refs.baseForm.$emit("submitBaseData");
       this.$refs.signupForm.$emit("submitSignupData");
       this.$refs.scoreForm.$emit("submitScoreData");
+
       this.finalDatas.status = type;
+      this.finalDatas.organizerId = this.aparId;
       try {
         await post('/app/activity/add',this.finalDatas)
         this.getData(false)
@@ -116,17 +124,12 @@ export default {
       }
     },
     cacheBaseData(val){
-      console.log("乖宝贝^3^");
       // this.finalDatas.baseData = val;
       let baseDatas = val;
       if(baseDatas.otherAdmin != null && baseDatas.otherAdmin.length > 0){
-        console.info("baseDatas.otherAdmin:");
-        console.info(baseDatas.otherAdmin);
         this.finalDatas.otherAdmin = String(baseDatas.otherAdmin);
       }
       if(baseDatas.groupId != null && baseDatas.groupId.length > 0){
-        console.info("baseDatas.groupId:");
-        console.info(baseDatas.groupId);
         let ids = new Array();
         // 接口完善后换'id'即可
         baseDatas.groupId.forEach(ele => {
@@ -147,15 +150,11 @@ export default {
       this.finalDatas.limitQuota = baseDatas.limitQuota;
       this.finalDatas.isblacklist = new Number(baseDatas.isblacklist);
       this.finalDatas.isreview = new Number(baseDatas.isreview); 
-      console.log('this.finalDatas')
-      console.info(this.finalDatas);
     },
     cacheSignupData(val){
-      console.log("乖宝贝^3^");
       this.finalDatas.rules = JSON.stringify(val);
     }, 
     cacheScoreData(val){
-      console.log("乖宝贝^3^");
       this.finalDatas.scoreData = JSON.stringify(val);
     }    
   }

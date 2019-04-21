@@ -50,6 +50,7 @@ export default {
   created(){
     this.data.aparId = this.$store.state.user.aparId;
     alert("aparId:::"+ this.data.sparId)
+    alert(this.$store.state.user.username)
   },
   methods: {
     /**
@@ -88,7 +89,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/app/user/auth/list/already/exadmin')
+          let res = await post('/system/user/auth/list/already/exmember')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)
@@ -96,11 +97,11 @@ export default {
         setTimeout(() => {
           this.loading = false;
           const list = this.lists.map(item => {
-            return {
+             return {
               id: item.id,
               realName: item.realName,
-              whatClass: item.groupVO.whatClass,
-              className:item.groupVO.className
+              whatClass: item.whatClass,
+              className:item.className
             };
           });
          

@@ -122,7 +122,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/system/user/auth/list/already/exadmin')
+          let res = await post('/system/user/auth/list/already/exmember')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)

@@ -17,84 +17,28 @@ export default {
     return {
       show:true,
       loading: false,
-      datas: [
-              {
-                  title: 'parent 1',
-                  expand: true,
-                  selected: false,
-                  children: [
-                      {
-                          title: 'parent 1-1',
-                          selected: false,
-                          children: [
-                              {
-                                  title: 'leaf 1-1-1',
-                                  selected: false,
-                              },
-                              {
-                                  title: 'leaf 1-1-2',
-                                  selected: false,
-                              }
-                          ]
-                      },
-                      {
-                          title: 'parent 1-2',
-                          children: [
-                              {
-                                  title: 'leaf 1-2-1',
-                                  selected: false,
-                              },
-                              {
-                                  title: 'leaf 1-2-2',
-                                  selected: false,
-                              }
-                          ]
-                      }
-                  ]
-              },
-              {
-                title:'部门分组',
-                expand: true,
-                children:[
-                    {
-                        id:'123456',
-                        title:'group01',
-                    },
-                    {
-                        id:'223456',
-                        title:'group02'
-                    },
-                    {
-                        id:'323456',
-                        title:'group03'
-                    }
-                ]
-              }
-            ],
+      datas: [],
       checkedNodes: []
     };
   },
   props: {
-    apartmentId:String,
+    aparId:String,
     checkeds:Array
   },
   created(){
-    // this.getData();
+    this.getData();
     let checkeds = this.checkeds;
+    let datas = this.datas;
+    alert(2333)
+    console.info(datas);
     this.checkedNodeSync(checkeds,this.datas)
         
   },
   methods: {
-    async getdata(){
+    async getData(){
         this.loading = true;
         try {
-          /**
-           * 接口测试用数据
-           */
-          this.apartmentId = 'abcdefg';
-          let res = await post('/app/apartment/group/list/{id}',null,{
-              id: this.apartmentId
-          })
+          let res = await post('/app/group/list/format')
           this.datas = res.data;
         } catch (error) {
           this.$throw(error)
@@ -102,19 +46,25 @@ export default {
         this.loading = false;
     },
     checkedNodeSync(checkeds,datas){
-        if(checkeds!=null && checkeds.length>0){      
-            datas.forEach(r => {
-                checkeds.forEach(c => {
-                    if(c.title== r.title){
-                        r.checked = true;
-                    }
-                });
-                if(r.children!=null && r.children.length>0){
-                    this.checkedNodeSync(checkeds,r.children)
-                }
-            });        
-        }
-      },
+      if(datas.length < 1){
+        this.getData();
+      }
+      if(checkeds!=null && checkeds.length>0){   
+        datas.forEach(r => {
+          alert(r.id) 
+          checkeds.forEach(c => {
+            alert(c.id) 
+            if(c.id === r.id){
+              alert(2333);
+              r.checked = true;
+            }
+          });
+          if(r.children!=null && r.children.length>0){
+            this.checkedNodeSync(checkeds,r.children)
+          }
+        });        
+      }
+    },
     /**
      * @description 关闭Modal
      */
@@ -129,24 +79,10 @@ export default {
       console.info(nodes);
       this.$emit('checkedNodes',nodes);
       this.$emit("cancel",false );
-    },
-    /**
-     * @description 添加分组数据请求
-     */
-    async add(data){
-        this.loading = true;
-        try {
-            let res = await post('/system/user/add',data)
-            this.$Message.success("用户 "+data.username+" 添加成功");
-            this.cancel(true)
-        } catch (error) {
-            this.$throw(error)
-        }
-        this.loading = false;
-    },
-    mounted () {
-      this.checkedNodes = this.$refs.tree.getCheckedNodes();
-    },
-  }
+    }
+  },
+  mounted () {
+    this.checkedNodes = this.$refs.tree.getCheckedNodes();
+  },
 };
 </script>

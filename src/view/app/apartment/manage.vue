@@ -138,7 +138,6 @@
     },
     created(){
       this.getData();
-      console.info(this.data)
     },
     methods:{
       pageChange(p){

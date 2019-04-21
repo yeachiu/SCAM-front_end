@@ -101,13 +101,14 @@
       components:{
       },
       created(){
-        this.aparId = this.$route.params.id;
+        this.aparId = this.$store.state.user.aparId;
         this.getData();
       },
       methods:{
         getData(){
             //用户主页路径
             this.linkToUser = '/my/' + this.apartmentData.apartAdmin;
+            
         },
         edit(type){
           switch(type){

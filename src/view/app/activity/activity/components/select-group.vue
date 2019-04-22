@@ -26,13 +26,7 @@ export default {
     checkeds:Array
   },
   created(){
-    this.getData();
-    let checkeds = this.checkeds;
-    let datas = this.datas;
-    alert(2333)
-    console.info(datas);
-    this.checkedNodeSync(checkeds,this.datas)
-        
+    this.getData();        
   },
   methods: {
     async getData(){
@@ -40,6 +34,8 @@ export default {
         try {
           let res = await post('/app/group/list/format')
           this.datas = res.data;
+          let checkeds = this.checkeds;
+          this.checkedNodeSync(checkeds,this.datas)
         } catch (error) {
           this.$throw(error)
         }
@@ -47,15 +43,12 @@ export default {
     },
     checkedNodeSync(checkeds,datas){
       if(datas.length < 1){
-        this.getData();
+        this.getDatas
       }
       if(checkeds!=null && checkeds.length>0){   
         datas.forEach(r => {
-          alert(r.id) 
           checkeds.forEach(c => {
-            alert(c.id) 
             if(c.id === r.id){
-              alert(2333);
               r.checked = true;
             }
           });

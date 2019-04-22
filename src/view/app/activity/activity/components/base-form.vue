@@ -48,8 +48,12 @@
         <InputNumber v-model="formItem.limitQuota" :max="500" :min="1"></InputNumber>
       </FormItem>
       <FormItem label="其他管理员">
-        <Select v-model="formItem.otherAdmin" multiple filterable remote :remote-method="findByApartmentId" :loading="loading">
-        <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
+        <!-- filterable remote :remote-method="findByApartmentId" :loading="loading" -->
+        <Select v-model="formItem.otherAdmin" multiple >
+          <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.realName}}</Option>
+        </Select>
+        <Select v-model="formItem.otherAdmin" multiple style="width:260px">
+          <Option v-for="item in options" :value="item.id" :key="item.id">{{ item.realName }}</Option>
         </Select>
       </FormItem>
       <!-- <FormItem label="启用黑名单">
@@ -133,6 +137,9 @@ export default {
   components:{
     SelectGroup
   },
+  created() {
+    this.findByApartmentId();
+  },
   methods: {       
     handleFormatError(file) {
       this.$Notice.warning({
@@ -169,35 +176,42 @@ export default {
     },
     uploadSuccess(response, file, fileList){
       this.formItem.pictureUrl = "/" + response.data;
-      console.info(this.formItem);
     },
     getNodes(val){
-      
       this.formItem.groupId = val;
     },
     async  findByApartmentId (query) {
-      if (query !== '') {
-        this.loading = true;
-        try {
-          let res = await post('/app/apartment/member/list/{id}',null,{
-              id: this.aparId
-          })
-          this.lists = res.data;
-        } catch (error) {
-          this.$throw(error)
-        }
-        setTimeout(() => {
-          this.loading = false;
-          const list = this.lists.map(item => {
-            return {
-              value: item.id,
-              label: item.username
-            };
-          });
-          this.options = list.filter(item => item.label.toLowerCase().indexOf(query.toLowerCase()) > -1);
-        }, 200);
-      } else {
-        this.options = [];
+      // if (query !== '') {
+      //   this.loading = true;
+      //   try {
+      //     let res = await post('/app/apartment/member/list/{id}',null,{
+      //         id: this.aparId
+      //     })
+      //     this.lists = res.data;
+      //   } catch (error) {
+      //     this.$throw(error)
+      //   }
+      //   setTimeout(() => {
+      //     this.loading = false;
+      //     const list = this.lists.map(item => {
+      //       return {
+      //         value: item.id,
+      //         label: item.username
+      //       };
+      //     });
+      //     this.options = list.filter(item => item.label.toLowerCase().indexOf(query.toLowerCase()) > -1);
+      //   }, 200);
+      // } else {
+      //   this.options = [];
+      // }
+      this.loading = true;
+      try {
+        let res = await post('/app/apartment/member/list/exadmin/{id}',null,{
+            id: this.aparId
+        })
+        this.options = res.data;
+      } catch (error) {
+        this.$throw(error)
       }
     },
     openModal(){

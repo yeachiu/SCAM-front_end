@@ -130,7 +130,6 @@
     },
     mounted(){
       this.$on("submitScoreData",() => {
-          console.log("老爹，score知道啦");
           this.$emit("submitData",this.data);
       })
     }

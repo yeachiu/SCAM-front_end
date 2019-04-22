@@ -15,7 +15,7 @@
                 </Select>
                 </FormItem> 
                 <FormItem label="年级">
-                    <InputNumber :max="2900" :min="1900" v-model="formData.period"></InputNumber>
+                    <InputNumber :max="2900" :min="1" v-model="formData.period"></InputNumber>
                 </FormItem>
                 <FormItem label="班级">
                     <InputNumber :max="99" :min="1" v-model="formData.whatClass" :formatter="value => `${value}班`"

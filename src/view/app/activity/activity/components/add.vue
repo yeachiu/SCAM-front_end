@@ -30,8 +30,8 @@
       </div>
       <div slot="footer">
         <Button type="default" :disabled="loading" @click="cancel(false)">取消</Button>
-        <Button type="primary" @click="save(0)">存为草稿</Button>
-        <Button type="primary" @click="save(1)">保存发布</Button>
+        <Button type="primary" @click="save(1)">存为草稿</Button>
+        <Button type="primary" @click="save(2)">保存发布</Button>
       </div>
     <!-- </Card> -->
     </Modal>
@@ -113,12 +113,12 @@ export default {
       this.finalDatas.organizerId = this.aparId;
       try {
         await post('/app/activity/add',this.finalDatas)
-        this.getData(false)
         this.$Message.destroy()
         this.$Message.success({
             content:"活动添加成功",
             duration: 1.5
         });
+        this.cancel(false);
       } catch (error) {
         this.$throw(error)
       }
@@ -131,11 +131,10 @@ export default {
       }
       if(baseDatas.groupId != null && baseDatas.groupId.length > 0){
         let ids = new Array();
-        // 接口完善后换'id'即可
+        // 拼接分组ID
         baseDatas.groupId.forEach(ele => {
-          if(ele.title != null){
-            alert(ele.title)
-            ids.push(ele.title);
+          if(ele.id != null){
+            ids.push(ele.id);
           }
         });
         this.finalDatas.groupId = String(ids);
@@ -177,4 +176,3 @@ export default {
     margin:0 auto;
   }
 </style>
-

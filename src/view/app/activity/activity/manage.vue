@@ -46,6 +46,7 @@
     export default {
       data () {
         return {
+          aparId:'',
           addActivityModal:false,
           updateActivityModal:false,
           updateId:null,
@@ -87,7 +88,7 @@
             },
             {
               title: '创建日期',
-              key: 'createDate',
+              key: 'createTime',
               render:(h,params)=>{
                 return h('span',dayjs(params.row.createDate).format('YYYY-MM-DD HH:mm:ss'))
               },
@@ -159,18 +160,7 @@
               }
             }
           ],
-          // data: {},
-          data:{
-            records:[
-              {
-                title:'活动一',status:1,memberNow:13,limitQuota:37,createDate:'Wed Mar 06 2019 00:00:00 GMT+0800 (中国标准时间)'
-              },
-              {
-                title:'活动二',status:2,memberNow:13,limitQuota:37,createDate:'Wed Mar 06 2019 00:00:00 GMT+0800 (中国标准时间)'
-              }
-            ],
-
-          },
+          data: {},
           dataFilter:{
             page:1,
             pageSize:15 
@@ -183,6 +173,7 @@
         AddActivity,UpdateActivity
       },
       created(){
+        this.aparId = this.$store.state.user.aparId;
         this.getData();
       },
       methods:{
@@ -231,16 +222,16 @@
          */
         async getData(){
             this.setting.loading = true;
-            //接口暂未开放 ……&*
-            // try {
-            //   let res = await post('/app/activity/list',{
-            //     page:this.dataFilter.page,
-            //     pageSize:this.dataFilter.pageSize
-            //   })
-            //   this.data = res.data;
-            // } catch (error) {
-            //   this.$throw(error)
-            // }
+            try {
+              let res = await post('/app/activity/list/aparId',{
+                id:this.aparId,
+                page:this.dataFilter.page,
+                pageSize:this.dataFilter.pageSize
+              })
+              this.data = res.data;
+            } catch (error) {
+              this.$throw(error)
+            }
             this.setting.loading = false;
         },
         /**
@@ -292,7 +283,7 @@
         exportData(type){
           if (type === 1) {
             this.$refs.table.exportCsv({
-              filename: '用户数据-'+new Date().getTime(),
+              filename: '活动数据-'+new Date().getTime(),
               columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
               data: this.data
             });

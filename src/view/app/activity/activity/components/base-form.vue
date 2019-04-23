@@ -36,6 +36,9 @@
       <FormItem label="描述" prop="description">
         <Input v-model="formItem.description" type="textarea" :autosize="{minRows: 3,maxRows: 5}" placeholder="Enter something..."></Input>
       </FormItem>
+      <FormItem label="描述" prop="address">
+        <Input v-model="formItem.address" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter something..."></Input>
+      </FormItem>
       <FormItem label="报名时间" prop="datetimeSignup">
         <DatePicker v-model="formItem.datetimeSignup" type="datetimerange" format="yyyy-MM-dd HH:mm:ss" @on-change="changeSignupDate"
           placeholder="选择报名时间段" style="width: 300px"></DatePicker>
@@ -97,6 +100,7 @@ export default {
         pictureUrl: '',
         title: '',
         description: '',
+        address: '', //  地点
         datetimeSignup: [],
         datetimeAct: [],
         limitQuota: 100,
@@ -111,6 +115,9 @@ export default {
         ],
         description:[
           {required:true,message:'活动描述不能为空', trigger:'blur'}          
+        ],
+        address:[
+          {required:true,message:'活动地点不能为空', trigger:'blur'}          
         ],
         datetimeSignup:[
           {required:true,validator:validateDate, trigger:'blur'}                    
@@ -181,33 +188,10 @@ export default {
       this.formItem.groupId = val;
     },
     async  findByApartmentId (query) {
-      // if (query !== '') {
-      //   this.loading = true;
-      //   try {
-      //     let res = await post('/app/apartment/member/list/{id}',null,{
-      //         id: this.aparId
-      //     })
-      //     this.lists = res.data;
-      //   } catch (error) {
-      //     this.$throw(error)
-      //   }
-      //   setTimeout(() => {
-      //     this.loading = false;
-      //     const list = this.lists.map(item => {
-      //       return {
-      //         value: item.id,
-      //         label: item.username
-      //       };
-      //     });
-      //     this.options = list.filter(item => item.label.toLowerCase().indexOf(query.toLowerCase()) > -1);
-      //   }, 200);
-      // } else {
-      //   this.options = [];
-      // }
       this.loading = true;
       try {
         let res = await post('/app/apartment/member/list/exadmin/{id}',null,{
-            id: this.aparId
+          id: this.aparId
         })
         this.options = res.data;
       } catch (error) {
@@ -221,7 +205,7 @@ export default {
      * @description 关闭模态窗口
      */
     onModalCancel(){
-        this.selectGroupModal=false;
+      this.selectGroupModal=false;
     },
     /**
      * @description 移除分组

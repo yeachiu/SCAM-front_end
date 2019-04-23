@@ -29,7 +29,7 @@
         </Card>
         <AddActivity v-if="addActivityModal" @cancel="onModalCancel"/>
         <UpdateActivity v-if="updateActivityModal" :roles="roles" :uid="updateId" @cancel="onModalCancel"/>
-      
+        <DetailActivity v-if="detailActivityModel" :data="detailVO" @cancel="onModalCancel" />
     </div>
 </template>
 <script> 
@@ -37,6 +37,7 @@
     import { post } from '@/libs/axios-cfg'
     import AddActivity from './components/add.vue'
     import UpdateActivity from './components/update.vue'
+    import DetailActivity from './components/detail.vue'
     /** 活动状态 **/
     let ACT_STATUS_DRAFT = 1;   //草稿
     let ACT_STATUS_PUBLISH = 2;   //已发布
@@ -49,7 +50,9 @@
           aparId:'',
           addActivityModal:false,
           updateActivityModal:false,
+          detailActivityModel:false,
           updateId:null,
+          detailVO:{},
           selections:[],
           removeModal:false,
           setting:{
@@ -61,6 +64,49 @@
             value:''
           },
           columns: [
+            // {
+            //   type: 'expand',
+            //   width: 50,
+            //   render: (h, params) => {
+            //     return h('div',[
+            //       h('p',{style:{margin:'10px'}},[
+            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},'报名时间：'),
+            //         h('span',{},params.row.signupTime),
+            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},' -- '),
+            //         h('span',{},params.row.deadlineTime)
+            //       ]),
+            //       h('p',{style:{margin:'10px'}},[
+            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},'活动时间：'),
+            //         h('span',{},params.row.startTime),
+            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},' -- '),
+            //         h('span',{},params.row.endTime)
+            //       ]),
+            //       h('p',{style:{margin:'10px'}},[
+            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},'活动描述'),
+            //         h('span',{},params.row.description),
+            //       ]),
+                  
+            //     ])
+            //   }
+            // },
+            {
+              title:'详情',
+              width:80,
+              render:(h,params)=>{
+                return h('Icon',{
+                  props:{
+                    type:"ios-list-box-outline",
+                    size:"24",
+                    color:'#8f90a2'
+                  },
+                  on:{
+                    click:()=>{
+                      this.openDetailModal(params.row)
+                    }
+                  }
+                },'')
+              }
+            },
             {title: '活动名称', key: 'title',sortable: true},
             {
               title: '状态',
@@ -83,14 +129,14 @@
               title: '已参与名额',
               key: 'limitQuota', 
               render:(h,params)=>{
-                return h('span',params.row.memberNow + '/' + params.row.limitQuota)
+                return h('span',params.row.memberNow + ' / ' + params.row.limitQuota)
               }
             },
             {
               title: '创建日期',
               key: 'createTime',
               render:(h,params)=>{
-                return h('span',dayjs(params.row.createDate).format('YYYY-MM-DD HH:mm:ss'))
+                return h('span',dayjs(params.row.createTime).format('YYYY-MM-DD HH:mm:ss'))
               },
               sortable: true
             },
@@ -108,18 +154,18 @@
                         props: {type: 'primary',size: 'small'},
                         style: {marginRight: '5px'},
                         on:{
-                            click:()=>{
-                              this.openAddModal(params.row)
-                            }
+                          click:()=>{
+                            this.openAddModal(params.row)
+                          }
                         }
                       }, '编辑'),
                       h('Button', {
                         props: {type: 'warning' ,size: 'small'},
                         style: {marginRight: '5px'},
                         on:{
-                            click:()=>{
-                              this.changeStatus(params.row,ACT_STATUS_CANCEL)
-                            }
+                          click:()=>{
+                            this.changeStatus(params.row,ACT_STATUS_CANCEL)
+                          }
                         }
                       },'取消'),
                     ]);
@@ -130,27 +176,27 @@
                         props: {type: 'primary' ,size: 'small'},
                         style: {marginRight: '5px'},
                         on:{
-                            click:()=>{
-                              this.changeStatus(params.row,ACT_STATUS_PUBLISH)
-                            }
+                          click:()=>{
+                            this.changeStatus(params.row,ACT_STATUS_PUBLISH)
+                          }
                         }
                       },'发布'),
                       h('Button', {
                         props: {type: 'primary',size: 'small'},
                         style: {marginRight: '5px'},
                         on:{
-                            click:()=>{
-                              this.openAddModal(params.row)
-                            }
+                          click:()=>{
+                            this.openAddModal(params.row)
+                          }
                         }
                       }, '编辑'),
                       h('Button', {
                         props: {type: 'warning' ,size: 'small'},
                         style: {marginRight: '5px'},
                         on:{
-                            click:()=>{
-                              this.changeStatus(params.row,ACT_STATUS_CANCEL)
-                            }
+                          click:()=>{
+                            this.changeStatus(params.row,ACT_STATUS_CANCEL)
+                          }
                         }
                       },'取消')
                     ]);
@@ -170,7 +216,7 @@
         }
       },
       components:{
-        AddActivity,UpdateActivity
+        AddActivity,UpdateActivity,DetailActivity
       },
       created(){
         this.aparId = this.$store.state.user.aparId;
@@ -261,6 +307,10 @@
               this.updateActivityModal = true;
             }
         },
+        openDetailModal(activity){
+          this.detailVO = activity;
+          this.detailActivityModel = true;
+        },
         /**
          * @description 关闭模态窗口
          * @param type 窗口类型
@@ -273,6 +323,9 @@
             };break;
             case 'update':{
               this.updateActivityModal = false;
+            };break;
+            case 'detail':{
+              this.detailActivityModel = false;
             };break;
           }
           if(reload) this.getData();

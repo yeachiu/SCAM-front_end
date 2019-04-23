@@ -58,6 +58,7 @@ export default {
         pictureUrl: '',
         title: '',
         description: '',
+        address:'',
         signupTime: {},
         deadlineTime:{},
         startTime:{},
@@ -141,6 +142,7 @@ export default {
       }
       this.finalDatas.title = baseDatas.title;
       this.finalDatas.description = baseDatas.description;
+      this.finalDatas.address = baseDatas.address;
       this.finalDatas.pictureUrl = baseDatas.pictureUrl;
       this.finalDatas.signupTime = new Date(baseDatas.datetimeSignup[0]);
       this.finalDatas.deadlineTime = new Date(baseDatas.datetimeSignup[1]);
@@ -176,3 +178,4 @@ export default {
     margin:0 auto;
   }
 </style>
+

@@ -42,7 +42,7 @@
               <tr>
                 <td><span class="tt"><Icon type="md-people"/>&nbsp;活动管理员</span>&nbsp;</td>
                 <td>
-                  <Poptip v-for="item in activityData.otherAdmin" trigger="hover" >
+                  <Poptip v-for="item in activityData.otherAdmin" trigger="hover" :key="item.id">
                     <span class="aa" v-if="item.id === activityData.createUser" style="color:#797979;margin-right: 15px;">
                       <Avatar v-bind:src="item.avatar"  @on-error="fixAvatar(item.id)" size="small" />&nbsp;{{item.realName}}
                     </span>
@@ -63,7 +63,7 @@
                 <td><span class="tt"><Icon type="md-people"/>&nbsp;活动对象</span>&nbsp;</td>
                 <td>
                   <ul style="margin: 10px 15px;">
-                    <li class="aa" v-for="item in activityData.grouplimit">{{item.name}}</li>
+                    <li class="aa" v-for="item in activityData.grouplimit" :key="item.id">{{item.name}}</li>
                   </ul>
                 </td>
               </tr>
@@ -167,6 +167,7 @@ export default {
       }
     },
     fixAvatar(adminId){
+      alert(2333)
       this.activityData.otherAdmin.forEach(ele => {
         if(ele.id === adminId){
           ele.avatar = 'https://i.loli.net/2017/08/21/599a521472424.jpg';

@@ -59,24 +59,20 @@ export default {
         } catch (error) {
           this.$throw(error)
         }
+        const list = this.lists.map(item => {
+          return {
+            id: item.id,
+            username: item.username
+          };
+        });
         setTimeout(() => {
           this.loading = false;
-          const list = this.lists.map(item => {
-             return {
-              id: item.id,
-              username: item.username
-            };
-          });
-         
+          this.userlist = [];
           list.forEach(ele => {
             if(ele.username.toLowerCase().indexOf(query.toLowerCase()) > -1 ){
               this.userlist.push(ele);  
             }
           });
-          
-            // return result;
-          // }
-          
         }, 200);
       } else {
         this.userlist = [];
@@ -91,17 +87,17 @@ export default {
         } catch (error) {
           this.$throw(error)
         }
+        const list = this.lists.map(item => {
+          return {
+            id: item.id,
+            realName: item.realName,
+            whatClass: item.groupVO.whatClass,
+            className:item.groupVO.className
+          };
+        });
         setTimeout(() => {
           this.loading = false;
-          const list = this.lists.map(item => {
-             return {
-              id: item.id,
-              realName: item.realName,
-              whatClass: item.groupVO.whatClass,
-              className:item.groupVO.className
-            };
-          });
-         
+          this.studentList = [];
           list.forEach(ele => {
             if(ele.realName.toLowerCase().indexOf(query.toLowerCase()) > -1 ){
               this.studentList.push(ele);  
@@ -109,10 +105,6 @@ export default {
               this.studentList.push(ele);
             }
           });
-          
-            // return result;
-          // }
-          
         }, 200);
       } else {
         this.studentList = [];

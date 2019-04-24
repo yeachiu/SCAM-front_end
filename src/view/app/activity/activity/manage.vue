@@ -244,7 +244,7 @@
         async getData(){
             this.setting.loading = true;
             try {
-              let res = await post('/app/activity/list/aparId',{
+              let res = await post('/app/activity/list',{
                 id:this.aparId,
                 page:this.dataFilter.page,
                 pageSize:this.dataFilter.pageSize

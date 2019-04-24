@@ -49,8 +49,6 @@ export default {
   },
   created(){
     this.data.aparId = this.$store.state.user.aparId;
-    alert("aparId:::"+ this.data.sparId)
-    alert(this.$store.state.user.username)
   },
   methods: {
     /**

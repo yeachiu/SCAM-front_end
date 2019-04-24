@@ -1,38 +1,40 @@
 <template>
-    <div>
-        <Table :columns="columns" :data="data">
-            <template slot-scope="{ row, index }" slot="awardName">
-                <Input type="text" v-model="editName" v-if="editIndex === index && index != 0" />
-                <span v-else>{{ row.awardName }}</span>
-            </template>
+  <div>
+    <Table :columns="columns" :data="data">
+      <template slot-scope="{ row, index }" slot="awardName">
+        <Input type="text" v-model="editName" v-if="editIndex === index && row.awardName != '参与成功'" />
+        <span v-else>{{ row.awardName }}</span>
+      </template>
 
-            <template slot-scope="{ row, index }" slot="awardNum">
-                <InputNumber :min="1" type="text" v-model="editNum"  v-if="editIndex === index && index != 0" />
-                <span v-else>{{ ifBlank(row.awardNum) }}</span>
-            </template>
+      <template slot-scope="{ row, index }" slot="awardNum">
+        <InputNumber :min="1" type="text" v-model="editNum"  v-if="editIndex === index && row.awardName != '参与成功'" />
+        <span v-else>{{ ifBlank(row.awardNum) }}</span>
+      </template>
 
-            <template slot-scope="{ row, index }" slot="awardScore">
-                <InputNumber :min="0" :step="0.5" v-model="editScore" v-if="editIndex === index" />
-                <span v-else>{{ row.awardScore }}</span>
-            </template>
+      <template slot-scope="{ row, index }" slot="awardScore">
+        <InputNumber :min="0" :step="0.5" v-model="editScore" v-if="editIndex === index" />
+        <span v-else>{{ row.awardScore }}</span>
+      </template>
 
-            <template slot-scope="{ row, index }" slot="action">
-                <div v-if="editIndex === index">
-                <Button @click="handleSave(index)">保存</Button>
-                <Button @click="cancel">取消</Button>
-                </div>
-                <div v-else>
-                <ButtonGroup shape="circle">
-                    <Button @click="handleEdit(row, index)">操作</Button>
-                    <Button @click="handleRemove(index)" v-if="index != 0">删除</Button>
-                </ButtonGroup>
-                </div>
-            </template>
-        </Table>
-        <Button icon="ios-add" type="dashed" @click="handleAdd" class="handleAdd">添加</Button>
-    </div> 
+      <template slot-scope="{ row, index }" slot="action">
+        <div v-if="editIndex === index">
+        <Button @click="handleSave(index)">保存</Button>
+        <Button @click="cancel">取消</Button>
+        </div>
+        <div v-else>
+        <ButtonGroup shape="circle">
+          <Button @click="handleEdit(row, index)">操作</Button>
+          <Button @click="handleRemove(index)" v-if="index != 0">删除</Button>
+        </ButtonGroup>
+        </div>
+      </template>
+    </Table>
+    <Button icon="ios-add" type="dashed" @click="handleAdd" class="handleAdd">添加</Button>
+  </div> 
 </template>
 <script>
+  import dayjs from 'dayjs'
+  import { post } from '@/libs/axios-cfg'
   export default {
     data () {
       return {
@@ -55,7 +57,7 @@
             align: 'center'
           }
         ],
-        data: [
+        defaultData: [
           {
             awardName: '参与成功',
             awardNum: '',
@@ -77,29 +79,62 @@
             awardScore: 2
           },
         ],
-        editIndex: -1,  // 当前聚焦的输入框的行数
-        editName: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
-        editNum: '',  // 第二列输入框
-        editScore: '',  // 第三列输入框
+        data:[],
+        // 编辑
+          editIndex: -1,  // 当前聚焦的输入框的行数
+          editName: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
+          editNum: '',  // 第二列输入框
+          editScore: '',  // 第三列输入框
       }
     },
+    props: {
+      actiId:{
+        type:String,
+        default:''
+      }
+    },
+    created(){
+      this.getData();
+    },
     methods: {
+      getData(){
+        let actiId = this.actiId;
+        if(actiId === ''){  //新增活动
+          this.data = this.defaultData;
+        }else{
+          this.getScoreData(actiId);
+        }
+      },
+      //获取已存在活动的学分数据
+      async getScoreData(actiId){
+        try {
+          let res = post('app/activity/score/get/{id}',null,{
+            id:actiId
+          })
+          this.data = res.data;
+        } catch (error) {
+          this.$throw(error);
+        }
+      },
+      // 添加条目
       handleAdd(){
-        let addItem = {
-            awardName: '',
-            awardNum: 1 ,
-            awardScore: 1
-          };
+        let addItem = {   //初始化数据
+          awardName: '',
+          awardNum: 1 ,
+          awardScore: 1
+        };
         this.data.push(addItem);
         let index = this.data.length - 1;
         this.handleEdit(addItem,index);
       },
+      // 某行数据进入编辑状态
       handleEdit (row, index) {
         this.editName = row.awardName;
         this.editNum = row.awardNum;
         this.editScore = row.awardScore;
         this.editIndex = index;
       },
+      // 保存
       handleSave (index) {
         if(this.editName == ''){
           this.$Message.error({
@@ -111,11 +146,13 @@
         this.data[index].awardName = this.editName;
         this.data[index].awardNum = this.editNum;
         this.data[index].awardScore = this.editScore;
-        this.editIndex = -1;
+        this.editIndex = -1;  //  退出编辑
       },
+      // 移除
       handleRemove(index) {
         this.data.splice(index,1);
       },
+      // 取消
       cancel(){
         if(this.editName == ''){
           this.handleRemove(this.data.length - 1);
@@ -123,14 +160,18 @@
         }
         this.editIndex = -1;
       },
+      // 空值处理
       ifBlank(num){
         if(num == ''){  return '--';   }
         return num;
       }
     },
     mounted(){
+      // 事件监听，提交数据给父组件
       this.$on("submitScoreData",() => {
-          this.$emit("submitData",this.data);
+        console.log('score-setting-form提交数据:')
+        console.info(this.data)
+        this.$emit("submitData",this.data);
       })
     }
   }

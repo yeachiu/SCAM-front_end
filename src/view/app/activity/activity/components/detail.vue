@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Modal ref="modal" v-model="activityData" draggable :width="800">
+    <Modal ref="modal" v-model="detailActivityModel" scrollable :width="900" :mask-closable="false">
       <div>
         <h2 class="actiTitle">{{activityData.title}}
           <span class="star" @click="changeFocus">
@@ -14,7 +14,7 @@
         </h2>
         <div class="actiContent">
           <Row>
-          <Col span="16" class="col">
+          <Col span="14" class="col">
             <table>
               <tr><td colspan="2">
                 <p style="padding: 0px 10px 10px;">
@@ -44,10 +44,10 @@
                 <td>
                   <Poptip v-for="item in activityData.otherAdmin" trigger="hover" >
                     <span class="aa" v-if="item.id === activityData.createUser" style="color:#797979;margin-right: 15px;">
-                      <Avatar v-bind:src="checkAvatar(item.avatar)" size="small"/>&nbsp;{{item.realName}}
+                      <Avatar v-bind:src="item.avatar"  @on-error="fixAvatar(item.id)" size="small" />&nbsp;{{item.realName}}
                     </span>
                     <span class="aa" v-else style="color:#969696;margin-right: 15px;">
-                      <Avatar v-bind:src="checkAvatar(item.avatar)" size="small"/>&nbsp;{{item.realName}}
+                      <Avatar v-bind:src="item.avatar"  @on-error="fixAvatar(item.id)" size="small"/>&nbsp;{{item.realName}}
                     </span>
                     <div slot="content" >
                       <p >{{ item.realName }}({{item.username}})</p>
@@ -70,17 +70,26 @@
               <tr>
                 <td><span class="tt"><Icon type="md-checkmark-circle-outline" />&nbsp;报名审核</span>&nbsp;</td>
                 <td>
-                  <!-- <Switch :disabled="disabled" />  v-model="isreview" -->
-                  <Switch/>
-                  <Button v-if="isreview" @click="doReview">进入审核</Button>
+                  <i-switch v-model="isreview" :disabled="disabled" style="margin-right:20px;">
+                    <span slot="open">是</span>
+                    <span slot="close">否</span>
+                  </i-switch>
+                  <Button v-if="isreview" @click="doReview" size="small">进入审核</Button>
                 </td>
               </tr>
             </table>
           </Col>
           <Col span="8" class="col">
             <div class="actiImg">
-              <img v-bind:src="checkPath(activityData.pictureurl)" alt="活动配图">
-              <img v-bind:src="'http://localhost:1000/upload' + activityData.pictureurl" alt="120" />
+              <img v-bind:src="activityData.pictureurl" alt="活动配图" v-if="checkPath(activityData.pictureurl)"/>
+              <img v-bind:src="global_.public_img" alt="活动配图" v-else>
+            </div>
+          </Col>
+          <Col span="2" class="col">
+            <div class="side-button-bar">
+              <button class="side-button" @click="edit"><span>编辑</span></button>
+              <button class="side-button" @click="signupDetail"><span>表单</span></button>
+              <button class="side-button" @click="scoreDeatil"><span>学分</span></button>
             </div>
           </Col>
           </Row>
@@ -92,45 +101,35 @@
         <Button type="info"  @click="close">关闭</Button>
       </div>
     </Modal>
+    <ScoreDetail v-if="showScoreDeatilModal" :activityData="datafordetail"  @cancel="onModalCancel" />
+    <SignupFormDetail v-if="showSignupFormDeatilModal" :activityData="datafordetail"  @cancel="onModalCancel" />
   </div>
 </template>
 <script>
 import dayjs from 'dayjs'
 import global_   from  '@/view/global.vue'
 import { post , get } from '@/libs/axios-cfg'
+import SignupFormDetail from './signup-form-detail.vue'
+import ScoreDetail from './score-detail.vue'
 export default {
   data() {
     return {
       loading: false,
       disabled:true,
+      detailActivityModel:true,
       activityData:{},
-      //   pictureUrl: '',
-      //   title: 'zz获胜的防护服搜救zzzzzzzzzzzzzzz',
-      //   description: 'zzzzzzzzzzzzzzzz仿vUI经济囧不是林小欧和熊咯哦11zzzzzzzzzzzzzzz',
-      //   organizer:{
-      //     id:'123d',name:'yguidiu'
-      //   },
-      //   address:'埃菲尔铁塔七楼三点钟方向',
-      //   signUpTime: '2019-04-08 15:25:10',
-      //   deadlineTime:'2019-04-08 15:25:10',
-      //   startTime:'2019-04-08 15:25:10',
-      //   endTime:'2019-04-08 15:25:10',
-      //   limitQuota: 100,
-      //   otherAdminlist: [
-      //     {realName: "邱XX",stuNum: "1122344455",period:2015,profession:'信息系统',whatClass: "15信管1班"},
-      //   ],
-      //   isblackList: '1',
-      //   isreview: '1',
-      //   status:0,
-      //   rules:'',
-      // },
       createUser:{},
       isreview:false,
       infocus:false,
       insignup:false,
       grouplist: [],
-      scoreData:''
+      showScoreDeatilModal:false,
+      showSignupFormDeatilModal:false,
+      scoreData:'',
     };
+  },
+  components:{
+    SignupFormDetail,ScoreDetail
   },
   props: {
     data:{
@@ -152,16 +151,6 @@ export default {
       if(this.data.isreview == 0){
         this.isreview = true;
       }
-      console.info(this.createUser);
-      this.loading = true;
-      // try {
-      //   let id = this.$route.params.actiId;
-      //   let res = await post('/app/activity/detail/{id}')
-      //   this.activityData = res.data;
-      // } catch (error) {
-      //   this.$throw(error);
-      // }
-      this.loading = false;
     },
     close(){
       this.$emit('cancel','detail');
@@ -169,30 +158,20 @@ export default {
     dateformat(date){
       return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
     },
-    async checkPath(imgPath){
-      let path = 	'http://localhost:1000/upload' + imgPath;
+    async checkPath(imgPath){      
       try {
-        let res = await get(path);
-        return 'http://localhost:1000/upload' + imgPath;
+        let res = await get(imgPath);
+        return true;
       } catch (error) {
-        return global_.public_img;
+        return false;
       }
-      // var ImgObj = new Image();
-      // ImgObj.src = 'http://localhost:1000/upload' + imgPath;
-      // if(ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)){
-      //   return imgPath;
-      // } else {
-      //   return global_.public_img;
-      // }
     },
-    checkAvatar(avatar){
-      var ImgObj = new Image();
-      ImgObj.src = 'http://localhost:1000/upload' + avatar;
-      if(ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)){
-        return imgPath;
-      } else {
-        return 'https://i.loli.net/2017/08/21/599a521472424.jpg';
-      }
+    fixAvatar(adminId){
+      this.activityData.otherAdmin.forEach(ele => {
+        if(ele.id === adminId){
+          ele.avatar = 'https://i.loli.net/2017/08/21/599a521472424.jpg';
+        }
+      })
     },
     getStateName(state,type){
       switch (type){
@@ -215,6 +194,22 @@ export default {
     },
     doReview(){
       
+    },
+    change (status) {
+      this.$Message.info('开关状态：' + status);
+    },
+    edit(){
+
+    },
+    signupDetail(){
+      //向子组件传值
+      this.showSignupFormDeatilModal = true;
+      this.datafordetail = this.data;
+    },
+    scoreDeatil(){
+      //向子组件传值
+      this.showScoreDeatilModal = true;
+      this.datafordetail = this.data;
     },
     async changeFocus(){
       this.infocus = this.infocus ? false : true;
@@ -260,12 +255,66 @@ export default {
         this.$throw(error);
       }
       this.loading = false;
+    },
+    /**
+     * @description 关闭模态窗口
+     * @param type 窗口类型
+     * @param reload 是否重新加载数据
+     */
+    onModalCancel(type,reload = false){
+      switch(type){
+        case 'score':{
+          this.showScoreDeatilModal = false;
+        };break;
+        case 'singupForm':{
+          this.showSignupFormDeatilModal = false;
+        };break;
+      }
+      if(reload) this.getData();
+    }
+  },
+  watch:{
+    detailActivityModel:function(newvalue,oldvalue){
+      if(!newvalue){
+        this.close();
+      }
     }
   },
   mounted() {}
 };
 </script>
 <style>
+  .side-button-bar {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .side-button{
+    width: 55%;
+    padding: 21px 0 5px 0;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    color: #515a6e;
+    background-color: #fff;
+    border-color: #dcdee2;
+    margin-bottom: 20px;
+    border-radius: 3px;
+    font-size: 14px;
+  }
+  .side-button:hover {
+    color: #57a3f3;
+    background-color: white;
+    border-color: #57a3f3;
+  }
+  .side-button:focus {
+    webkit-box-shadow: 0 0 0 2px rgba(45, 140, 240, 0.2);
+    box-shadow: 0 0 0 2px rgba(45, 140, 240, 0.2);
+  }
+  .side-button span {
+    writing-mode: vertical-rl;
+    letter-spacing: 10px;
+    vertical-align: middle;
+  }
   .actiTitle {
     margin: 20px 10px;
     display: inherit;

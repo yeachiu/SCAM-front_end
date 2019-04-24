@@ -64,31 +64,6 @@
             value:''
           },
           columns: [
-            // {
-            //   type: 'expand',
-            //   width: 50,
-            //   render: (h, params) => {
-            //     return h('div',[
-            //       h('p',{style:{margin:'10px'}},[
-            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},'报名时间：'),
-            //         h('span',{},params.row.signupTime),
-            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},' -- '),
-            //         h('span',{},params.row.deadlineTime)
-            //       ]),
-            //       h('p',{style:{margin:'10px'}},[
-            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},'活动时间：'),
-            //         h('span',{},params.row.startTime),
-            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},' -- '),
-            //         h('span',{},params.row.endTime)
-            //       ]),
-            //       h('p',{style:{margin:'10px'}},[
-            //         h('span',{style:{fontWeight:'bold',margin:'20px'}},'活动描述'),
-            //         h('span',{},params.row.description),
-            //       ]),
-                  
-            //     ])
-            //   }
-            // },
             {
               title:'详情',
               width:80,

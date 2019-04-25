@@ -24,12 +24,13 @@
         <div v-else>
         <ButtonGroup shape="circle">
           <Button @click="handleEdit(row, index)">操作</Button>
-          <Button @click="handleRemove(index)" v-if="index != 0">删除</Button>
+          <Button @click="handleRemove(index)" v-if="row.awardName != '参与成功'">删除</Button>
         </ButtonGroup>
         </div>
       </template>
     </Table>
     <Button icon="ios-add" type="dashed" @click="handleAdd" class="handleAdd">添加</Button>
+    <Button type="primary" @click="handleUpdate" class="handleUpdate" v-if="isedit">提交更新</Button>
   </div> 
 </template>
 <script>
@@ -38,6 +39,7 @@
   export default {
     data () {
       return {
+        loading:false,
         columns: [
           {
             title: '奖项名',
@@ -85,37 +87,36 @@
           editName: '',  // 第一列输入框，当然聚焦的输入框的输入内容，与 data 分离避免重构的闪烁
           editNum: '',  // 第二列输入框
           editScore: '',  // 第三列输入框
+        isedit:false
       }
     },
-    props: {
-      actiId:{
-        type:String,
-        default:''
-      }
-    },
+    props: [
+      'scoreData','actiId'
+    ],
     created(){
       this.getData();
     },
     methods: {
       getData(){
-        let actiId = this.actiId;
-        if(actiId === ''){  //新增活动
+        if(this.scoreData == null){  //新增活动
           this.data = this.defaultData;
         }else{
-          this.getScoreData(actiId);
+          this.data = this.scoreData;
+          this.isedit = true;
         }
       },
-      //获取已存在活动的学分数据
-      async getScoreData(actiId){
-        try {
-          let res = post('app/activity/score/get/{id}',null,{
-            id:actiId
-          })
-          this.data = res.data;
-        } catch (error) {
-          this.$throw(error);
-        }
-      },
+      // //获取已存在活动的学分数据
+      // async getScoreData(actiId){
+      //   try {
+      //     let res = post('app/activity/score/get/{id}',null,{
+      //       id:actiId
+      //     })
+      //     this.data = res.data;
+      //   } catch (error) {
+      //     this.$throw(error);
+      //   }
+      // },
+
       // 添加条目
       handleAdd(){
         let addItem = {   //初始化数据
@@ -152,6 +153,24 @@
       handleRemove(index) {
         this.data.splice(index,1);
       },
+      //提交更新
+      async handleUpdate(){
+        console.log('要提交的数据：')
+        console.info(this.data)
+        // let data = JSON.stringify(this.data);
+        this.loading = true;
+        try {
+          let res = await post('app/activity/score/update/{actiId}',this.data,{
+            actiId:this.actiId
+          })
+          // 刷新数据
+          this.$emit("refresh",this.actiId);
+          this.$Message.success("活动的学分设置更新成功");
+        } catch (error) {
+          this.$throw(error);
+        }
+        this.loading = false;
+      },
       // 取消
       cancel(){
         if(this.editName == ''){
@@ -173,6 +192,12 @@
         console.info(this.data)
         this.$emit("submitData",this.data);
       })
+      // 事件监听，监听父组件刷新方法
+      this.$on("refreshData",() => {
+        console.log('score-setting-form刷新数据:')
+        // console.info(this.data)
+        this.getData();
+      })
     }
   }
 </script>
@@ -180,5 +205,9 @@
   .handleAdd {
     width: 100%;
     border-radius: 0px;
+  }
+  .handleUpdate {
+    width: 100%;
+    margin-top: 20px;
   }
 </style>

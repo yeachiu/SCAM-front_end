@@ -2,134 +2,158 @@
   <div>
     <Modal ref="modal" v-model="detailActivityModel" scrollable :width="900" :mask-closable="false">
       <div>
-        <h2 class="actiTitle">{{activityData.title}}
-          <span class="star" @click="changeFocus">
-            <Icon type="ios-star-outline" v-if="infocus" title="关注活动"/>
-            <Icon type="md-star" color="#ffac2d" v-else title="取消关注"/>
-          </span>   
-          <span class="signupButton" @click="changeSignup" v-if="activityData.status > 1">
-            <Button v-if="insignup">报名</Button>
-            <Button v-else>取消报名</Button>
-          </span>        
-        </h2>
+        <h2 class="actiTitle">{{activityData.title}}</h2>
         <div class="actiContent">
-          <Row>
-          <Col span="14" class="col">
-            <table>
-              <tr><td colspan="2">
-                <p style="padding: 0px 10px 10px;">
-                <span>{{createUser.realName}}&nbsp;创建于&nbsp;{{dateformat(activityData.createTime)}} </span>
-                <span style="margin-left:15px;"><Icon type="md-flame" color="#ea6f5a"/>&nbsp;活动{{getStateName(activityData.status,'acti')}}</span>
-                <span style="margin-left:15px;"><Icon type="md-flame" color="#ea6f5a"/>&nbsp;已报名：{{ activityData.memberNow + ' / ' + activityData.limitQuota }}</span>
-                </p>
-              </td></tr>
-              <tr>
-                <td><span class="tt"><Icon type="md-contacts" />&nbsp;主办方</span>&nbsp;</td>
-                <td><span class="cc">{{activityData.organizer.name}}</span></td>
-              </tr>
-              <tr>
-                <td><span class="tt"><Icon type="ios-pin-outline" />&nbsp;地点</span>&nbsp;</td>
-                <td><span class="cc">{{activityData.address}}</span></td>
-              </tr>
-              <tr>
-                <td><span class="tt"><Icon type="md-time" />&nbsp;报名时间</span>&nbsp;</td>
-                <td><span class="cc">{{dateformat(activityData.signupTime)}} -- {{dateformat(activityData.deadlineTime)}}</span></td>
-              </tr>
-              <tr>
-                <td><span class="tt"><Icon type="md-alarm" />&nbsp;活动时间</span>&nbsp;</td>
-                <td><span class="cc"> {{dateformat(activityData.startTime)}} -- {{dateformat(activityData.endTime)}}</span></td>
-              </tr>
-              <tr>
-                <td><span class="tt"><Icon type="md-people"/>&nbsp;活动管理员</span>&nbsp;</td>
-                <td>
-                  <Poptip v-for="item in activityData.otherAdmin" trigger="hover" :key="item.id">
-                    <span class="aa" v-if="item.id === activityData.createUser" style="color:#797979;margin-right: 15px;">
-                      <Avatar v-bind:src="item.avatar"  @on-error="fixAvatar(item.id)" size="small" />&nbsp;{{item.realName}}
-                    </span>
-                    <span class="aa" v-else style="color:#969696;margin-right: 15px;">
-                      <Avatar v-bind:src="item.avatar"  @on-error="fixAvatar(item.id)" size="small"/>&nbsp;{{item.realName}}
-                    </span>
-                    <div slot="content" >
-                      <p >{{ item.realName }}({{item.username}})</p>
-                      <!-- <p>学号 : {{ item.stuNum }}</p>
-                      <p>年级 : {{ item.period }}级</p>
-                      <p>专业 : {{ item.profession }}</p>
-                      <p>班级 : {{ item.whatClass }}</p> -->
-                    </div>
-                  </Poptip>
-                </td>
-              </tr>
-              <tr>
-                <td><span class="tt"><Icon type="md-people"/>&nbsp;活动对象</span>&nbsp;</td>
-                <td>
-                  <ul style="margin: 10px 15px;">
-                    <li class="aa" v-for="item in activityData.grouplimit" :key="item.id">{{item.name}}</li>
-                  </ul>
-                </td>
-              </tr>
-              <tr>
-                <td><span class="tt"><Icon type="md-checkmark-circle-outline" />&nbsp;报名审核</span>&nbsp;</td>
-                <td>
-                  <i-switch v-model="isreview" :disabled="disabled" style="margin-right:20px;">
-                    <span slot="open">是</span>
-                    <span slot="close">否</span>
-                  </i-switch>
-                  <Button v-if="isreview" @click="doReview" size="small">进入审核</Button>
-                </td>
-              </tr>
-            </table>
-          </Col>
-          <Col span="8" class="col">
-            <div class="actiImg">
-              <img v-bind:src="activityData.pictureurl" alt="活动配图" v-if="checkPath(activityData.pictureurl)"/>
-              <img v-bind:src="global_.public_img" alt="活动配图" v-else>
+          <!-- 活动基本信息 -->
+          <div v-if="turnto == 'base'">
+            <Row>
+              <!-- 基本信息 -->
+              <Col span="14" class="col">
+                <table>
+                  <tr><td colspan="2">
+                    <p style="padding: 0px 10px 10px;">
+                    <span>{{createUser.realName}}&nbsp;创建于&nbsp;{{dateformat(activityData.createTime)}} </span>
+                    <span style="margin-left:15px;"><Icon type="md-flame" color="#ea6f5a"/>&nbsp;活动{{getStateName(activityData.status,'acti')}}</span>
+                    <span style="margin-left:15px;"><Icon type="md-flame" color="#ea6f5a"/>&nbsp;已报名：{{ activityData.memberNow + ' / ' + activityData.limitQuota }}</span>
+                    </p>
+                  </td></tr>
+                  <tr>
+                    <td><span class="tt"><Icon type="md-contacts" />&nbsp;主办方</span>&nbsp;</td>
+                    <td><span class="cc">{{activityData.organizer.name}}</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="tt"><Icon type="ios-pin-outline" />&nbsp;地点</span>&nbsp;</td>
+                    <td><span class="cc">{{activityData.address}}</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="tt"><Icon type="md-time" />&nbsp;报名时间</span>&nbsp;</td>
+                    <td><span class="cc">{{dateformat(activityData.signupTime)}} -- {{dateformat(activityData.deadlineTime)}}</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="tt"><Icon type="md-alarm" />&nbsp;活动时间</span>&nbsp;</td>
+                    <td><span class="cc"> {{dateformat(activityData.startTime)}} -- {{dateformat(activityData.endTime)}}</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="tt"><Icon type="md-people"/>&nbsp;活动管理员</span>&nbsp;</td>
+                    <td>
+                      <Poptip v-for="item in activityData.otherAdmin" trigger="hover" >
+                        <span class="aa" v-if="item.id === activityData.createUser" style="color:#797979;margin-right: 15px;">
+                          <Avatar v-bind:src="item.avatar"  @on-error="fixAvatar(item.id)" size="small" />&nbsp;{{item.realName}}
+                        </span>
+                        <span class="aa" v-else style="color:#969696;margin-right: 15px;">
+                          <Avatar v-bind:src="item.avatar"  @on-error="fixAvatar(item.id)" size="small"/>&nbsp;{{item.realName}}
+                        </span>
+                        <div slot="content" >
+                          <p >{{ item.realName }}({{item.username}})</p>
+                          <!-- <p>学号 : {{ item.stuNum }}</p>
+                          <p>年级 : {{ item.period }}级</p>
+                          <p>专业 : {{ item.profession }}</p>
+                          <p>班级 : {{ item.whatClass }}</p> -->
+                        </div>
+                      </Poptip>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="tt"><Icon type="md-people"/>&nbsp;活动对象</span>&nbsp;</td>
+                    <td>
+                      <ul style="margin: 10px 15px;">
+                        <li class="aa" v-for="item in activityData.grouplimit">{{item.name}}</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="tt"><Icon type="md-checkmark-circle-outline" />&nbsp;报名审核</span>&nbsp;</td>
+                    <td>
+                      <i-switch v-model="isreview" :disabled="disabled" style="margin-right:20px;">
+                        <span slot="open">是</span>
+                        <span slot="close">否</span>
+                      </i-switch>
+                      <Button v-if="isreview" @click="doReview" size="small">进入审核</Button>
+                    </td>
+                  </tr>
+                </table>
+              </Col>
+              <!-- 活动配图 -->
+              <Col span="8" class="col">
+                <div class="actiImg">
+                  <img v-bind:src="activityData.pictureurl" alt="活动配图" v-if="checkPath(activityData.pictureurl)"/>
+                  <img v-bind:src="global_.public_img" alt="活动配图" v-else>
+                </div>
+              </Col>
+              <!-- 侧边操作栏 -->
+              <Col span="2" class="col">
+                <div class="side-button-bar">
+                  <button class="side-button" @click="edit(turnto)"><span>编辑</span></button>
+                  <button class="side-button" @click="signupDetail"><span>表单</span></button>
+                  <button class="side-button" @click="scoreDeatil"><span>学分</span></button>
+                </div>
+              </Col>
+            </Row>
+            <p class="tt"><Icon type="ios-paper" />详情</p>
+            <p class="description">{{activityData.description}}</p>
+          </div>  
+          <!-- 活动报名表信息 -->
+          <div v-if="turnto == 'signup'">
+            <div style="margin-bottom: 20px;">
+              <Button size="small" @click="turnto = 'base'">返回</Button>
+              <Button size="small" @click="getSignupFormData(activityData.id)">刷新</Button>
             </div>
-          </Col>
-          <Col span="2" class="col">
-            <div class="side-button-bar">
-              <button class="side-button" @click="edit"><span>编辑</span></button>
-              <button class="side-button" @click="signupDetail"><span>表单</span></button>
-              <button class="side-button" @click="scoreDeatil"><span>学分</span></button>
+            <form-create :rule="rules" style="margin:0 auto"></form-create>
+          </div>
+          <!-- 活动学分信息 -->
+          <div v-if="turnto == 'score'">
+            <div style="margin-bottom: 20px;">
+              <Button size="small" @click="turnto = 'base'">返回</Button>
+              <Button size="small" @click="getScoreData(activityData.id)">刷新</Button>
             </div>
-          </Col>
-          </Row>
+            <!-- <Table :columns="columns" :data="scoreSetting"></Table> -->
+            <ScoreSettingForm ref="scoreForm" v-bind="$attrs" :scoreData="scoreSetting" :actiId="activityData.id" v-on:refresh="getScoreData"/>
+            <!-- <ScoreSettingForm ref="scoreForm" v-bind="$attrs" v-on="$listeners"/> -->
+          </div>
         </div>
-        <p class="tt"><Icon type="ios-paper" />详情</p>
-        <p class="description">{{activityData.description}}</p>
       </div>
       <div slot="footer">
         <Button type="info"  @click="close">关闭</Button>
       </div>
     </Modal>
-    <ScoreDetail v-if="showScoreDeatilModal" :activityData="datafordetail"  @cancel="onModalCancel" />
-    <SignupFormDetail v-if="showSignupFormDeatilModal" :activityData="datafordetail"  @cancel="onModalCancel" />
   </div>
 </template>
 <script>
 import dayjs from 'dayjs'
 import global_   from  '@/view/global.vue'
 import { post , get } from '@/libs/axios-cfg'
-import SignupFormDetail from './signup-form-detail.vue'
-import ScoreDetail from './score-detail.vue'
+import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
 export default {
   data() {
     return {
+      actiId:'',
       loading: false,
       disabled:true,
       detailActivityModel:true,
       activityData:{},
       createUser:{},
       isreview:false,
-      infocus:false,
-      insignup:false,
-      grouplist: [],
-      showScoreDeatilModal:false,
-      showSignupFormDeatilModal:false,
-      scoreData:'',
+      turnto:'base',     //路由显示哪部分内容:base.signup.score
+      scoreSetting:[], 
+      columns: [    //学分表格
+        {
+          title: '奖项名',
+          key: 'awardName'
+        },
+        {
+          title: '名额',
+          key: 'awardNum'
+        },
+        {
+          title: '学分',
+          key: 'awardScore'
+        }
+      ], 
+      rules:'',     //报名表单规则
     };
   },
   components:{
-    SignupFormDetail,ScoreDetail
+    ScoreSettingForm
   },
   props: {
     data:{
@@ -141,6 +165,7 @@ export default {
     this.getData();
   },
   methods: {
+    // 初始化数据
     async getData(){
       this.activityData = this.data;
       this.data.otherAdmin.forEach(item => {
@@ -150,14 +175,19 @@ export default {
       }); 
       if(this.data.isreview == 0){
         this.isreview = true;
-      }
+      };
+      this.getScoreData(this.data.id);
+      this.getSignupFormData(this.data.id);
     },
+    // 关闭本窗口
     close(){
       this.$emit('cancel','detail');
     },
+    // 时间数据处理
     dateformat(date){
       return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
     },
+    // 图片有效性检查
     async checkPath(imgPath){      
       try {
         let res = await get(imgPath);
@@ -166,14 +196,15 @@ export default {
         return false;
       }
     },
+    // 头像加载不成功时触发
     fixAvatar(adminId){
-      alert(2333)
       this.activityData.otherAdmin.forEach(ele => {
         if(ele.id === adminId){
           ele.avatar = 'https://i.loli.net/2017/08/21/599a521472424.jpg';
         }
       })
     },
+    // 代码转义
     getStateName(state,type){
       switch (type){
         case 'acti':
@@ -182,81 +213,73 @@ export default {
           return global_.getStateName(state,global_.authStatus);
       }		
     },
-    async isFocus(actiId){
-      this.loading = true;
-      try {
-        let userId = this.$store.state.user.userId;
-        let res = await post('/app/focus/checkState/{actiId}/{userId}')
-        this.infocus = res.data;
-      } catch (error) {
-        this.$throw(error);
-      }
-      this.loading = false;
-    },
+    // 进入报名审核
     doReview(){
-      
+      // 涉及路由传参
+      // this.$router.push("");
     },
-    change (status) {
-      this.$Message.info('开关状态：' + status);
-    },
-    edit(){
 
+    edit(type){
+      let actiId = this.data.id;
+      switch(type){
+        case 'base':
+          this.$router.push({name:'activity_update_base',params:{'actiId':actiId}});
+          break;
+        case 'signup':
+          this.$router.push({name:'activity_update_signup',params:{'actiId':actiId}});
+          break;
+        case 'score':
+          this.$router.push({name:'activity_update_score',params:{'actiId':actiId}});
+          break;
+      }
     },
     signupDetail(){
-      //向子组件传值
-      this.showSignupFormDeatilModal = true;
-      this.datafordetail = this.data;
+      let actiId = this.data.id;
+      this.getSignupFormData(actiId);
+      this.turnto = 'signup';
     },
     scoreDeatil(){
-      //向子组件传值
-      this.showScoreDeatilModal = true;
-      this.datafordetail = this.data;
+      let actiId = this.data.id;
+      this.getScoreData(actiId);
+      this.turnto = 'score';
+      // console.info(this.scoreSetting)
     },
-    async changeFocus(){
-      this.infocus = this.infocus ? false : true;
-      this.loading = true;
-      try {
-        let userId = this.$store.state.user.userId;
-        let res = await post('/app/focus/changeState/{actiId}/{userId}',null,this.infocus);
-        // this.$Message.destroy()
-        // this.$Message.success({
-        //   content:"关注",
-        //   duration: 1
-        // });
-        this.infocus = res.data;
-      } catch (error) {
-        this.$throw(error);
-      }
-      this.loading = false;
-    },
-    async isSignup(actiId){
-      this.loading = true;
-      try {
-        let userId = this.$store.state.user.userId;
-        let res = await post('/app/signup/checkState/{actiId}/{userId}')
-        this.insignup = res.data;
-      } catch (error) {
-        this.$throw(error);
-      }
-      this.loading = false;
-    },
-    async changeSignup(){
-      this.insignup = this.insignup ? false : true;
-      this.loading = true;
-      try {
-        let userId = this.$store.state.user.userId;
-        let res = await post('/app/signup/changeState/{actiId}/{userId}',null,this.insignup);
-        // this.$Message.destroy()
-        // this.$Message.success({
-        //   content:"关注",
-        //   duration: 1
-        // });
-        this.insignup = res.data;
-      } catch (error) {
-        this.$throw(error);
-      }
-      this.loading = false;
-    },
+    //获取已存在活动的报名表数据
+      async getSignupFormData(actiId){
+        if(actiId == ''){   // 数据失效，返回列表页
+          this.$router.push({name: 'activity_manage'});
+        }
+        this.loading = true;
+        try {
+          let res = await post('app/activity/signup/get/{id}',null,{
+            id:actiId
+          })
+          this.rules = res.data;
+        } catch (error) {
+          this.$throw(error);
+        }
+        this.loading = false;
+      },
+    //获取已存在活动的学分数据
+      async getScoreData(actiId){  
+        actiId = String(actiId);
+        if(actiId == ''){   // 数据失效，返回列表页
+          this.$router.push({name: 'activity_manage'});
+        }
+        this.loading = true;
+        try {
+          let res = await post('app/activity/score/get/{id}',null,{
+            id:actiId
+          })
+          this.scoreSetting = res.data;
+        } catch (error) {
+          this.$throw(error);
+        }
+        this.loading = false;
+        // 通知子组件刷新数据
+        this.$refs.scoreForm.$emit("refreshData");
+        
+      },
     /**
      * @description 关闭模态窗口
      * @param type 窗口类型
@@ -272,7 +295,10 @@ export default {
         };break;
       }
       if(reload) this.getData();
-    }
+    },
+    // change (status) {
+    //   this.$Message.info('开关状态：' + status);
+    // },
   },
   watch:{
     detailActivityModel:function(newvalue,oldvalue){

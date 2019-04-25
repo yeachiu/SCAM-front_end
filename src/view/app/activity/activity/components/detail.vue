@@ -98,7 +98,7 @@
               <Button size="small" @click="turnto = 'base'">返回</Button>
               <Button size="small" @click="getSignupFormData(activityData.id)">刷新</Button>
             </div>
-            <form-create :rule="rules" style="margin:0 auto"></form-create>
+            <form-create :rule="rules" style="margin:0 auto" ></form-create>
           </div>
           <!-- 活动学分信息 -->
           <div v-if="turnto == 'score'">
@@ -106,9 +106,7 @@
               <Button size="small" @click="turnto = 'base'">返回</Button>
               <Button size="small" @click="getScoreData(activityData.id)">刷新</Button>
             </div>
-            <!-- <Table :columns="columns" :data="scoreSetting"></Table> -->
             <ScoreSettingForm ref="scoreForm" v-bind="$attrs" :scoreData="scoreSetting" :actiId="activityData.id" v-on:refresh="getScoreData"/>
-            <!-- <ScoreSettingForm ref="scoreForm" v-bind="$attrs" v-on="$listeners"/> -->
           </div>
         </div>
       </div>
@@ -149,7 +147,7 @@ export default {
           key: 'awardScore'
         }
       ], 
-      rules:'',     //报名表单规则
+      rules:[],     //报名表单规则
     };
   },
   components:{
@@ -218,21 +216,20 @@ export default {
       // 涉及路由传参
       // this.$router.push("");
     },
-
-    edit(type){
-      let actiId = this.data.id;
-      switch(type){
-        case 'base':
-          this.$router.push({name:'activity_update_base',params:{'actiId':actiId}});
-          break;
-        case 'signup':
-          this.$router.push({name:'activity_update_signup',params:{'actiId':actiId}});
-          break;
-        case 'score':
-          this.$router.push({name:'activity_update_score',params:{'actiId':actiId}});
-          break;
-      }
-    },
+    // edit(type){
+    //   let actiId = this.data.id;
+    //   switch(type){
+    //     case 'base':
+    //       this.$router.push({name:'activity_update_base',params:{'actiId':actiId}});
+    //       break;
+    //     case 'signup':
+    //       this.$router.push({name:'activity_update_signup',params:{'actiId':actiId}});
+    //       break;
+    //     case 'score':
+    //       this.$router.push({name:'activity_update_score',params:{'actiId':actiId}});
+    //       break;
+    //   }
+    // },
     signupDetail(){
       let actiId = this.data.id;
       this.getSignupFormData(actiId);
@@ -251,10 +248,10 @@ export default {
         }
         this.loading = true;
         try {
-          let res = await post('app/activity/signup/get/{id}',null,{
+          let res = await post('app/activity/form/get/{id}',null,{
             id:actiId
           })
-          this.rules = res.data;
+          this.rules =  JSON.parse(res.data.rules);
         } catch (error) {
           this.$throw(error);
         }

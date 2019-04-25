@@ -163,13 +163,13 @@
           let res = await post('app/activity/score/update/{actiId}',this.data,{
             actiId:this.actiId
           })
-          // 刷新数据
-          this.$emit("refresh",this.actiId);
           this.$Message.success("活动的学分设置更新成功");
         } catch (error) {
           this.$throw(error);
         }
         this.loading = false;
+         // 刷新数据
+          this.$emit("refresh",this.actiId);
       },
       // 取消
       cancel(){

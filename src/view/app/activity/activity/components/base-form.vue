@@ -82,6 +82,7 @@
 <script>
 import { post } from '@/libs/axios-cfg'
 import SelectGroup from './select-group.vue'
+import dayjs from 'dayjs'
 export default {
   data(){
     const validateDate = (rule,value,callback) =>  {
@@ -141,13 +142,21 @@ export default {
       default:{}
     }
   },
+  props: [
+    'data','aparId'
+  ],
   components:{
     SelectGroup
   },
   created() {
-    this.findByApartmentId();
+    this.getData();
   },
-  methods: {       
+  methods: {
+    getData(){
+      console.log("data"+ this.data);
+      console.log("aparId"+ this.aparId)
+      this.findByApartmentId();
+    },       
     handleFormatError(file) {
       this.$Notice.warning({
         title: '文件格式不正确',

@@ -98,7 +98,8 @@
               <Button size="small" @click="turnto = 'base'">返回</Button>
               <Button size="small" @click="getSignupFormData(activityData.id)">刷新</Button>
             </div>
-            <form-create :rule="rules" style="margin:0 auto" ></form-create>
+            <!-- <form-create :rule="rules" style="margin:0 auto" ></form-create> -->
+            <SignupForm ref="signupForm" v-bind="$attrs" :ruleData="rules" :actiId="activityData.id" v-on:refresh="getSignupFormData"/>
           </div>
           <!-- 活动学分信息 -->
           <div v-if="turnto == 'score'">
@@ -120,6 +121,7 @@
 import dayjs from 'dayjs'
 import global_   from  '@/view/global.vue'
 import { post , get } from '@/libs/axios-cfg'
+import SignupForm from '@/view/app/activity/activity/components/signup-form.vue'
 import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
 export default {
   data() {
@@ -151,7 +153,7 @@ export default {
     };
   },
   components:{
-    ScoreSettingForm
+    ScoreSettingForm,SignupForm
   },
   props: {
     data:{
@@ -231,18 +233,19 @@ export default {
     //   }
     // },
     signupDetail(){
-      let actiId = this.data.id;
-      this.getSignupFormData(actiId);
+      // let actiId = this.data.id;
+      this.getSignupFormData(this.activityData.id);
       this.turnto = 'signup';
     },
     scoreDeatil(){
-      let actiId = this.data.id;
-      this.getScoreData(actiId);
+      // let actiId = this.data.id;
+      this.getScoreData(this.activityData.id);
       this.turnto = 'score';
       // console.info(this.scoreSetting)
     },
     //获取已存在活动的报名表数据
       async getSignupFormData(actiId){
+        this.turnto = 'signup';
         if(actiId == ''){   // 数据失效，返回列表页
           this.$router.push({name: 'activity_manage'});
         }
@@ -252,6 +255,8 @@ export default {
             id:actiId
           })
           this.rules =  JSON.parse(res.data.rules);
+           // 通知子组件刷新数据
+        this.$refs.signupForm.$emit("refreshData");
         } catch (error) {
           this.$throw(error);
         }
@@ -259,6 +264,7 @@ export default {
       },
     //获取已存在活动的学分数据
       async getScoreData(actiId){  
+        this.turnto = 'score';
         actiId = String(actiId);
         if(actiId == ''){   // 数据失效，返回列表页
           this.$router.push({name: 'activity_manage'});
@@ -269,12 +275,12 @@ export default {
             id:actiId
           })
           this.scoreSetting = res.data;
+          // 通知子组件刷新数据
+        this.$refs.scoreForm.$emit("refreshData");
         } catch (error) {
           this.$throw(error);
         }
         this.loading = false;
-        // 通知子组件刷新数据
-        this.$refs.scoreForm.$emit("refreshData");
         
       },
     /**

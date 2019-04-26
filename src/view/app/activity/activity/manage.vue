@@ -221,11 +221,12 @@
         async changeStatus(obj,currentStatus){
           this.setting.loading = true;
           let req_msg = currentStatus==ACT_STATUS_CANCEL ? '已取消' : '已发布';
+          let data = {
+            aid : obj.id,
+            status : currentStatus
+          }
           try {
-            let res = await post('/app/activity/statusChange/{uid}/{status}',{
-              uid: obj.id,
-              status: currentStatus
-            })
+            let res = await post('/app/activity/statusChange',data);
             this.$Message.destroy();
             this.$Message.success(req_msg);
             if(currentStatus == ACT_STATUS_CANCEL){
@@ -237,6 +238,7 @@
             this.$throw(error)
           }
           this.setting.loading = false;
+          this.getData();
         },
         /**
          * @description 获取活动列表

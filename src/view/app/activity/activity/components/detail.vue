@@ -83,7 +83,7 @@
               <!-- 侧边操作栏 -->
               <Col span="2" class="col">
                 <div class="side-button-bar">
-                  <button class="side-button" @click="edit(turnto)"><span>编辑</span></button>
+                  <button class="side-button" @click="edit"><span>编辑</span></button>
                   <button class="side-button" @click="signupDetail"><span>表单</span></button>
                   <button class="side-button" @click="scoreDeatil"><span>学分</span></button>
                 </div>
@@ -115,12 +115,20 @@
         <Button type="info"  @click="close">关闭</Button>
       </div>
     </Modal>
+    <Modal v-model="editBaseModal" scrollable :width="900" :mask-closable="false">
+      <div style="margin-bottom: 20px;">
+        <Button size="small" @click="turnto = 'base'">返回</Button>
+        <Button size="small" @click="getData()">刷新</Button>
+      </div>
+      <BaseForm ref="baseForm" v-bind="$attrs" :actiId="activityData.id" />
+    </Modal>
   </div>
 </template>
 <script>
 import dayjs from 'dayjs'
 import global_   from  '@/view/global.vue'
 import { post , get } from '@/libs/axios-cfg'
+import BaseForm from '@/view/app/activity/activity/components/base-form.vue'
 import SignupForm from '@/view/app/activity/activity/components/signup-form.vue'
 import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
 export default {
@@ -129,6 +137,7 @@ export default {
       actiId:'',
       loading: false,
       disabled:true,
+      editBaseModal:false,
       detailActivityModel:true,
       activityData:{},
       createUser:{},
@@ -153,7 +162,7 @@ export default {
     };
   },
   components:{
-    ScoreSettingForm,SignupForm
+    ScoreSettingForm,SignupForm,BaseForm
   },
   props: {
     data:{
@@ -218,34 +227,20 @@ export default {
       // 涉及路由传参
       // this.$router.push("");
     },
-    // edit(type){
-    //   let actiId = this.data.id;
-    //   switch(type){
-    //     case 'base':
-    //       this.$router.push({name:'activity_update_base',params:{'actiId':actiId}});
-    //       break;
-    //     case 'signup':
-    //       this.$router.push({name:'activity_update_signup',params:{'actiId':actiId}});
-    //       break;
-    //     case 'score':
-    //       this.$router.push({name:'activity_update_score',params:{'actiId':actiId}});
-    //       break;
-    //   }
-    // },
+    edit(){
+      this.editBaseModal = true;
+      // this.detailActivityModel = false;
+    },
     signupDetail(){
-      // let actiId = this.data.id;
       this.getSignupFormData(this.activityData.id);
       this.turnto = 'signup';
     },
     scoreDeatil(){
-      // let actiId = this.data.id;
       this.getScoreData(this.activityData.id);
       this.turnto = 'score';
-      // console.info(this.scoreSetting)
     },
     //获取已存在活动的报名表数据
       async getSignupFormData(actiId){
-        this.turnto = 'signup';
         if(actiId == ''){   // 数据失效，返回列表页
           this.$router.push({name: 'activity_manage'});
         }
@@ -264,7 +259,6 @@ export default {
       },
     //获取已存在活动的学分数据
       async getScoreData(actiId){  
-        this.turnto = 'score';
         actiId = String(actiId);
         if(actiId == ''){   // 数据失效，返回列表页
           this.$router.push({name: 'activity_manage'});

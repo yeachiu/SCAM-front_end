@@ -18,7 +18,7 @@
             <p slot="title">选择项目：</p>
             <div class="customize">
               <Input type="text" v-model.trim="addTitle" placeholder="create formItem" style="height:30px;width:250px;"></Input>
-              <Button type="primary" @click="handleSubmit">添加自定义项目</Button> 
+              <Button type="primary" @click="handleAdd">添加自定义项目</Button> 
             </div>
             <div class="selectOption">
               <Select v-model="selectTitles" filterable multiple>
@@ -28,15 +28,18 @@
           </Card>
          
         </Col>
-    </Row>    
+    </Row>
+    <Button type="primary" @click="handleUpdate" class="handleUpdate" v-if="isedit">提交更新</Button>
   </div>
 </template>
 
 <script>
-export default {
-  
+import dayjs from 'dayjs'
+import { post } from '@/libs/axios-cfg'
+export default { 
   data(){
     return{
+      isedit:false,
       index:3700,
       defaultRules:[
         { //活动ID
@@ -171,6 +174,12 @@ export default {
       }
     }
   },
+  props:[
+    'ruleData','actiId'
+  ],
+  created(){
+    this.getData();
+  },
   methods:{
     getData(){
       // 1.获取当前用户信息，用于自动填充某些字段
@@ -178,17 +187,37 @@ export default {
       // 2.获取所有班级分组
 
       // 3.准备好数据
-      this.rules = [...this.defaultRules];
-      this.rules.forEach(item => {
-        if(item.title != null){
-          this.titles.push(item.title);
-        }
-      });
-      this.selectTitles = [...this.titles];
-      this.returntitle();
-    },
-    handleAdd () {
-      alert("添加自定义项目");
+      this.isfirst = true;
+      this.titles = [];
+      this.selectTitles = [];
+      if(this.rules == null || this.rules == ''){ // 新增
+        console.log('null')
+        this.rules = [...this.defaultRules];
+        console.log(this.rules);
+        this.rules.forEach(item => {    
+          if(item.title != null){
+            this.titles.push(item.title);
+          }
+        });
+        this.selectTitles = [...this.titles];
+        this.returntitle();
+      }else{
+        console.log('rrr')
+        this.rules = this.ruleData;
+        this.isedit = true;
+        this.rules.forEach(item => {    
+          if(item.title != null && item.title != ''){
+            this.titles.push(item.title);
+            this.selectTitles = [...this.titles];
+            // this.defaultRules.forEach(ele => {
+            //   if(ele.title == item.title){
+            //     this.selectTitles.push(item.title);
+            //   }
+            // })
+          }
+        });
+        
+      }
     },
     handleClose (event, name) {
         const index = this.titles.indexOf(name);
@@ -201,9 +230,9 @@ export default {
       this.rules.forEach(item =>{
         a.push(item.title);
       });
-      console.info(a);
+      // console.info(a);
     },
-    handleSubmit() {
+    handleAdd() {
         //1.不接受空值，去空格
         //2.去重
         this.addTitle = this.trim(this.addTitle);
@@ -217,14 +246,43 @@ export default {
         this.addRule.placeholder = '请输入' + this.addRule.title;
         this.addRule.message = this.addRule.title + '不能为空';
         //4.添加到rules,同步titles,selestTitle
-        console.info(this.addRule)
-        this.rules.push(this.addRule);
-        this.selectTitles.push(this.addRule.title);
-        this.defaultTitle.push(this.addRule.title);
+        // console.info(this.addRule)
+        let add = this.deepCopy(this.addRule);
+        this.rules.push(add);
+        this.selectTitles.push(add.title);
+        this.defaultTitle.push(add.title);
         this.addTitle = '';
     },
+    //提交更新
+      async handleUpdate(){
+        console.log('要提交的数据：')
+        console.info(this.rules)
+        let rule = JSON.stringify(this.rules);
+        let data = {
+          actiId:this.actiId,
+          rules : rule
+        }
+        this.loading = true;
+        try {
+          let res = await post('app/activity/form/update/{actiId}',data)
+          this.$Message.success("活动的报名表单更新成功");
+          //  // 刷新数据
+          // this.$emit("refresh",this.actiId);
+        } catch (error) {
+          this.$throw(error);
+        }
+        this.loading = false;
+        
+      },
     trim(str){  //去掉字符串的空格
       return str.replace(/\s*/g,"");
+    },
+    deepCopy (obj) {
+      let temp = obj.constructor === Array ? [] : {}
+      for (let val in obj) {
+        temp[val] = typeof obj[val] == 'object' ? this.deepCopy(obj[val]) : obj[val]
+      }
+      return temp
     }
   },
   watch: {
@@ -236,7 +294,7 @@ export default {
         return;
       }
       if(len > oldSelect.length){   //增加
-        console.info("select add")
+        // console.info("select add")
         this.defaultRules.forEach(item => {
           if(item.title == newSelect[len-1]){
             this.rules.push(item)
@@ -259,7 +317,8 @@ export default {
           console.info("selectTitles移除末元素")
         }
       }
-    }
+    },
+    
   },
   created(){
     this.getData();
@@ -268,7 +327,13 @@ export default {
     this.$on("submitSignupData",() => {
       console.log("老爹，signup知道啦");
       this.$emit("submitData",this.rules);
-    })
+    }),
+    // 事件监听，监听父组件刷新方法
+      this.$on("refreshData",() => {
+        console.log('signup-form刷新数据:')
+        this.getData();
+        console.info(this.rules)
+      })
   }
 }
 </script>
@@ -299,5 +364,9 @@ export default {
   }
   .ivu-form .ivu-form-item-label {
     width: 25% !important;
+  }
+  .handleUpdate {
+    width: 100%;
+    margin-top: 20px;
   }
 </style>

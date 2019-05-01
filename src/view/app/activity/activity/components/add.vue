@@ -11,7 +11,7 @@
       </Steps>
       </p>   
       <Card :bordered="false" v-show = "current == 0"  dis-hover>
-        <BaseForm ref="baseForm" :aparId="aparId" :user="user" v-on:submitData="cacheBaseData" class="TabContent"/>
+        <BaseForm ref="baseForm" v-bind="$attrs" :aparId="aparId" v-on:submitData="cacheBaseData" class="TabContent"/>
       </Card>
       <Card :bordered="false" v-show = "current == 1"  dis-hover>
         <SignupForm ref="signupForm" v-on:submitData="cacheSignupData" class="TabContent"/>
@@ -158,6 +158,13 @@ export default {
     cacheScoreData(val){
       this.finalDatas.scoreData = JSON.stringify(val);
     }    
+  },
+  watch:{
+    show : function(newvalue,oldvalue){
+      if(!newvalue){
+        this.cancel();
+      }
+    }
   }
 }
 </script>

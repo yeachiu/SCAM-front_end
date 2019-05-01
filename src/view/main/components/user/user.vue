@@ -6,6 +6,7 @@
       <DropdownMenu slot="list">
         <DropdownItem name="my">signed in as <b>{{$store.state.user.userName}}</b></DropdownItem>
         <DropdownItem style="border-top:1px solid #ccc"></DropdownItem>
+        <DropdownItem name="linktoclient">前往客户端</DropdownItem>
         <DropdownItem name="logout">退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -47,7 +48,11 @@ export default {
               name: 'login'
             })
           })
-          break
+          break;
+        case 'linktoclient':
+          this.handleLogOut().then(() => {
+            window.location.href = "http://localhost:1004"
+          })
       }
     }
   }

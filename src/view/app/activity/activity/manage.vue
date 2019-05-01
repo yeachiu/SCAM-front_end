@@ -29,7 +29,17 @@
         </Card>
         <AddActivity v-if="addActivityModal" @cancel="onModalCancel"/>
         <UpdateActivity v-if="updateActivityModal" :roles="roles" :uid="updateId" @cancel="onModalCancel"/>
-        <DetailActivity v-if="detailActivityModel" :data="detailVO" @cancel="onModalCancel" />
+        <DetailActivity v-if="detailActivityModel" :editBaseForm="editBaseForm" :data="detailVO" @cancel="onModalCancel" @reEditBaseForm="reEditBaseForm"/>
+        <Modal v-model="editBaseFormModel" scrollable :width="900" :mask-closable="false">
+          <div style="margin-bottom: 20px;">
+            <Button size="small" @click="editBaseFormModel = false">返回</Button>
+            <Button size="small" @click="refreshBaseForm">刷新</Button>
+          </div>
+          <BaseForm ref="baseForm" :actiId="actiIdToEdit" />
+          <div slot="footer">
+            <Button type="info"  @click="editBaseFormModel = false">关闭</Button>
+          </div>
+        </Modal>
     </div>
 </template>
 <script> 
@@ -38,6 +48,7 @@
     import AddActivity from './components/add.vue'
     import UpdateActivity from './components/update.vue'
     import DetailActivity from './components/detail.vue'
+    import BaseForm from '@/view/app/activity/activity/components/base-form.vue'
     /** 活动状态 **/
     let ACT_STATUS_DRAFT = 1;   //草稿
     let ACT_STATUS_PUBLISH = 2;   //已发布
@@ -48,9 +59,11 @@
       data () {
         return {
           aparId:'',
+          actiIdToEdit:'',
           addActivityModal:false,
           updateActivityModal:false,
           detailActivityModel:false,
+          editBaseFormModel:false,
           updateId:null,
           detailVO:{},
           selections:[],
@@ -130,7 +143,7 @@
                         style: {marginRight: '5px'},
                         on:{
                           click:()=>{
-                            this.openAddModal(params.row)
+                            this.openEditModal(params.row)
                           }
                         }
                       }, '编辑'),
@@ -161,7 +174,7 @@
                         style: {marginRight: '5px'},
                         on:{
                           click:()=>{
-                            this.openAddModal(params.row)
+                            this.openEditModal(params.row)
                           }
                         }
                       }, '编辑'),
@@ -187,11 +200,12 @@
             pageSize:15 
           },
           removeObject:null,
-          roles:null
+          roles:null,
+          editBaseForm:false
         }
       },
       components:{
-        AddActivity,UpdateActivity,DetailActivity
+        AddActivity,UpdateActivity,DetailActivity,BaseForm
       },
       created(){
         this.aparId = this.$store.state.user.aparId;
@@ -257,20 +271,6 @@
             }
             this.setting.loading = false;
         },
-        /**
-         * @description 获取回收站列表
-         */
-        async getCancelList(){
-            try {
-              let res = await post('/app/activity/list/cancel',{
-                page:1,
-                pageSize:1000
-              })
-              this.data = res.data;
-            } catch (error) {
-              this.$throw(error)
-            }
-        },
           /**
          * @description 打开模态窗口
          * @param uid 用户ID
@@ -287,6 +287,10 @@
         openDetailModal(activity){
           this.detailVO = activity;
           this.detailActivityModel = true;
+        },
+        openEditModal(acti){
+          this.actiIdToEdit = acti.id;
+          this.editBaseFormModel = true;
         },
         /**
          * @description 关闭模态窗口
@@ -307,6 +311,12 @@
           }
           if(reload) this.getData();
         },
+        reEditBaseForm(val){
+          this.editBaseForm = val;
+        },
+        refreshBaseForm(){
+          this.$refs.baseForm.getData();
+        }, 
         /**
          * @description 导出表格CSV
          */

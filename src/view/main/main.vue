@@ -43,8 +43,8 @@ import Fullscreen from './components/fullscreen'
 import Language from './components/language'
 import { mapMutations, mapActions } from 'vuex'
 import { getNewTagList, getNextRoute, routeEqual } from '@/libs/util'
-import minLogo from '@/assets/images/ico.png'
-import maxLogo from '@/assets/images/logo.png'
+import minLogo from '@/assets/images/logo-dark-mini.png'
+import maxLogo from '@/assets/images/logo-header.png'
 import './main.less'
 export default {
   name: 'Main',

@@ -191,9 +191,7 @@ export default {
       this.titles = [];
       this.selectTitles = [];
       if(this.rules == null || this.rules == ''){ // 新增
-        console.log('null')
         this.rules = [...this.defaultRules];
-        console.log(this.rules);
         this.rules.forEach(item => {    
           if(item.title != null){
             this.titles.push(item.title);
@@ -202,7 +200,6 @@ export default {
         this.selectTitles = [...this.titles];
         this.returntitle();
       }else{
-        console.log('rrr')
         this.rules = this.ruleData;
         this.isedit = true;
         this.rules.forEach(item => {    
@@ -230,7 +227,6 @@ export default {
       this.rules.forEach(item =>{
         a.push(item.title);
       });
-      // console.info(a);
     },
     handleAdd() {
         //1.不接受空值，去空格
@@ -246,7 +242,6 @@ export default {
         this.addRule.placeholder = '请输入' + this.addRule.title;
         this.addRule.message = this.addRule.title + '不能为空';
         //4.添加到rules,同步titles,selestTitle
-        // console.info(this.addRule)
         let add = this.deepCopy(this.addRule);
         this.rules.push(add);
         this.selectTitles.push(add.title);
@@ -255,8 +250,6 @@ export default {
     },
     //提交更新
       async handleUpdate(){
-        console.log('要提交的数据：')
-        console.info(this.rules)
         let rule = JSON.stringify(this.rules);
         let data = {
           actiId:this.actiId,
@@ -294,7 +287,6 @@ export default {
         return;
       }
       if(len > oldSelect.length){   //增加
-        // console.info("select add")
         this.defaultRules.forEach(item => {
           if(item.title == newSelect[len-1]){
             this.rules.push(item)
@@ -305,16 +297,15 @@ export default {
         let bool = true;//是否移除末元素
         for(let i=0;i<len;i++){
           if(newSelect[i] != oldSelect[i]){
-            console.info("selectTitles移除元素")
+            // console.info("selectTitles移除元素")
             this.rules.splice(i + 1,1);
             bool = false; 
             break;
           }
         }
         if(bool){
-          // console.info(this.rules.pop().title)
           this.rules.pop();
-          console.info("selectTitles移除末元素")
+          // console.info("selectTitles移除末元素")
         }
       }
     },
@@ -325,14 +316,11 @@ export default {
   },
   mounted(){
     this.$on("submitSignupData",() => {
-      console.log("老爹，signup知道啦");
       this.$emit("submitData",this.rules);
     }),
     // 事件监听，监听父组件刷新方法
       this.$on("refreshData",() => {
-        console.log('signup-form刷新数据:')
         this.getData();
-        console.info(this.rules)
       })
   }
 }

@@ -53,10 +53,7 @@
       <FormItem label="其他管理员">
         <!-- filterable remote :remote-method="findByApartmentId" :loading="loading" -->
         <Select v-model="formItem.otherAdmin" multiple >
-          <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.realName}}</Option>
-        </Select>
-        <Select v-model="formItem.otherAdmin" multiple style="width:260px">
-          <Option v-for="item in options" :value="item.id" :key="item.id">{{ item.realName }}</Option>
+          <Option v-for="option in options1" :value="option.id" :key="option.id">{{option.realName}}</Option>
         </Select>
       </FormItem>
       <!-- <FormItem label="启用黑名单">
@@ -73,10 +70,11 @@
       </FormItem>
       <FormItem label="活动面向对象">
         <Button type="info" @click="selectGroupModal = true"><Icon type="md-add"></Icon>&nbsp;添加分组</Button>
-        <Tag v-for="item in formItem.groupId" :key="item.id" closable @on-close="handleClose">{{item.title}}</Tag>
-      </FormItem>  
+        <Tag v-for="item in formItem.groupId" :key="item.id" closable @on-close="handleClose">{{item.name}}</Tag>
+      </FormItem>
     </Form>
-    <SelectGroup v-if="selectGroupModal" :aparId="aparId" :checkeds="formItem.groupId" v-on:checkedNodes="getNodes" @cancel="onModalCancel"></SelectGroup>  
+    <SelectGroup v-if="selectGroupModal" :aparId="apartmentId" :checkeds="formItem.groupId" v-on:checkedNodes="getNodes" @cancel="onModalCancel"></SelectGroup>
+    <Button type="primary" @click="handleUpdate" class="handleUpdate" v-if="isedit">提交更新</Button>
   </div>
 </template>
 <script>
@@ -88,12 +86,12 @@ export default {
     const validateDate = (rule,value,callback) =>  {
       if (value === null) {
         callback(new Error('Please select the DateTime'));
-      }     
+      }
       value.forEach((r,index)=>{
-        if(r === ""){ 
+        if(r === ""){
           callback(new Error('Please select the DateTime'));
         }
-      })  
+      })
       callback();
     };
     return{
@@ -115,35 +113,34 @@ export default {
           {required:true,message:'活动标题不能为空', trigger:'blur'}
         ],
         description:[
-          {required:true,message:'活动描述不能为空', trigger:'blur'}          
+          {required:true,message:'活动描述不能为空', trigger:'blur'}
         ],
         address:[
-          {required:true,message:'活动地点不能为空', trigger:'blur'}          
+          {required:true,message:'活动地点不能为空', trigger:'blur'}
         ],
         datetimeSignup:[
-          {required:true,validator:validateDate, trigger:'blur'}                    
+          {required:true,validator:validateDate, trigger:'blur'}
         ],
         datetimeAct:[
-          {required:true,validator:validateDate, trigger:'blur'}                    
+          {required:true,validator:validateDate, trigger:'blur'}
         ]
       },
       picture:{},
       uploadImg: {},
       showBigImg: false,
       loading: false,
-      options: [],
+      options1:[],
       list: [],
-      selectGroupModal:false
-    }
-  },
-  props:{
-    aparId:{
-      type:String,
-      default:{}
+      selectGroupModal:false,
+      apartmentId:'',
+      // 编辑模式
+      editData:{},
+      updateData:{},
+      isedit:false
     }
   },
   props: [
-    'data','aparId'
+    'actiId','aparId'
   ],
   components:{
     SelectGroup
@@ -152,11 +149,49 @@ export default {
     this.getData();
   },
   methods: {
-    getData(){
-      console.log("data"+ this.data);
-      console.log("aparId"+ this.aparId)
+    async getData(){
+      // 【编辑模式】
+      if(typeof(this.actiId) != "undefined" && this.actiId != ''){
+        this.isedit = true;
+        this.loading = true;
+        try {
+          let res = await post('app/activity/get/{id}',null,{
+            id:this.actiId
+          })
+          let data = res.data;
+          let datetimeSignup = [data.signupTime, data.deadlineTime];
+          let datetimeAct = [data.startTime, data.endTime];
+          let otherAdmin = data.otherAdmin;
+          let admins = new Array();
+          otherAdmin.forEach(ele => {
+            admins.push(ele.id);
+          });
+          this.formItem = {
+            pictureUrl: data.pictureUrl,
+            title: data.title,
+            description: data.description,
+            address: data.address, //  地点
+            datetimeSignup: datetimeSignup,
+            datetimeAct: datetimeAct,
+            limitQuota: data.limitQuota,
+            otherAdmin: admins,
+            // isblacklist: '1',
+            isreview: String(data.isreview),
+            groupId: data.grouplimit,
+          };
+
+          this.apartmentId = data.organizerId;
+          this.uploadImg.url = this.formItem.pictureUrl;
+
+        } catch (error) {
+          this.$throw(error);
+        }
+        this.loading = false;
+      }else{
+        this.apartmentId = this.aparId;
+      }
       this.findByApartmentId();
-    },       
+    },
     handleFormatError(file) {
       this.$Notice.warning({
         title: '文件格式不正确',
@@ -186,7 +221,7 @@ export default {
           };
         };
         this.formItem.picture = file;
-        
+
       }
       return true;
     },
@@ -200,12 +235,13 @@ export default {
       this.loading = true;
       try {
         let res = await post('/app/apartment/member/list/exadmin/{id}',null,{
-          id: this.aparId
+          id: this.apartmentId
         })
-        this.options = res.data;
+        this.options1 = res.data;
       } catch (error) {
         this.$throw(error)
       }
+      this.loading = false;
     },
     openModal(){
       this.selectGroupModal=true;
@@ -228,7 +264,45 @@ export default {
     },
     changeActDate(date){
       this.formItem.datetimeAct = date;
-    }
+    },
+    //提交更新
+      async handleUpdate(){
+        let ids = new Array();
+        if(this.formItem.groupId != null && this.formItem.groupId.length > 0){
+          // 拼接分组ID
+          this.formItem.groupId.forEach(ele => {
+            if(ele.id != null){
+              ids.push(ele.id);
+            }
+          });
+        }
+        this.updateData = {
+          title : this.formItem.title,
+          description : this.formItem.description,
+          address : this.formItem.address,
+          pictureUrl : this.formItem.pictureUrl,
+          signupTime : new Date(this.formItem.datetimeSignup[0]),
+          deadlineTime : new Date(this.formItem.datetimeSignup[1]),
+          startTime : new Date(this.formItem.datetimeAct[0]),
+          endTime : new Date(this.formItem.datetimeAct[1]),
+          limitQuota : this.formItem.limitQuota,
+          isreview : new Number(this.formItem.isreview),
+          otherAdmin : String(this.formItem.otherAdmin),
+          groupId : String(ids)
+        };
+        this.loading = true;
+        try {
+          let res = await post('app/activity/update/{actiId}',this.updateData,{
+            actiId:this.actiId
+          })
+          this.$Message.success("活动数据更新成功");
+        } catch (error) {
+          this.$throw(error);
+        }
+        this.loading = false;
+         // 刷新数据
+          this.$emit("refresh",this.actiId);
+      },
   },
   mounted(){
     this.$on('submitBaseData',()=>{
@@ -239,22 +313,22 @@ export default {
 </script>
 <style>
   .foreView{
-      display: inline-block;
-      width: 80px;
-      height: 80px;
-      text-align: center;
-      line-height: 80px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-      overflow: hidden;
-      background: #fff;
-      position: relative;
-      box-shadow: 0 1px 1px rgba(0,0,0,.2);
-      margin-right: 4px;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    line-height: 80px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,.2);
+    margin-right: 4px;
   }
   .foreView img{
-      width: 100%;
-      height: 100%;
+    width: 100%;
+    height: 100%;
   }
   .upload-img-cover{
     display: none;
@@ -274,27 +348,30 @@ export default {
     cursor: pointer;
     margin: 0 2px;
   }
-
-    .demo-upload-list-cover{
-        display: none;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0,0,0,.6);
-    }
-    .demo-upload-list:hover .demo-upload-list-cover{
-        display: block;
-    }
-    .demo-upload-list-cover i{
-        color: #fff;
-        font-size: 20px;
-        cursor: pointer;
-        margin: 0 2px;
-    }
-    .ivu-upload-drag {
-        border-radius: 40px;
-    }
+  .demo-upload-list-cover{
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.6);
+  }
+  .demo-upload-list:hover .demo-upload-list-cover{
+    display: block;
+  }
+  .demo-upload-list-cover i{
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0 2px;
+  }
+  .ivu-upload-drag {
+    border-radius: 40px;
+  }
+  .handleUpdate {
+    width: 100%;
+    margin-top: 20px;
+  }
 </style>
 

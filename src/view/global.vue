@@ -12,8 +12,10 @@ const actiStatus = [
 ];
 /** 认证状态 **/ 
 const authStatus = [
-  { state: 0,type:'认证中'},
-  { state: 1,type:'已认证'},
+  { state: 0,type:'未认证'},
+  { state: 1,type:'认证中'},
+  { state: 2,type:'已认证'},
+  { state: 3,type:'认证不通过'}
 ];
 function getStateName (state, arr) {
 

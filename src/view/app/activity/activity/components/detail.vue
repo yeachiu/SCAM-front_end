@@ -45,10 +45,6 @@
                         </span>
                         <div slot="content" >
                           <p >{{ item.realName }}({{item.username}})</p>
-                          <!-- <p>学号 : {{ item.stuNum }}</p>
-                          <p>年级 : {{ item.period }}级</p>
-                          <p>专业 : {{ item.profession }}</p>
-                          <p>班级 : {{ item.whatClass }}</p> -->
                         </div>
                       </Poptip>
                     </td>
@@ -57,7 +53,7 @@
                     <td><span class="tt"><Icon type="md-people"/>&nbsp;活动对象</span>&nbsp;</td>
                     <td>
                       <ul style="margin: 10px 15px;">
-                        <li class="aa" v-for="item in activityData.grouplimit">{{item.name}}</li>
+                        <li class="aa" v-for="item in activityData.grouplimit" :key="item.id">{{item.name}}</li>
                       </ul>
                     </td>
                   </tr>
@@ -76,7 +72,7 @@
               <!-- 活动配图 -->
               <Col span="8" class="col">
                 <div class="actiImg">
-                  <img v-bind:src="activityData.pictureurl" alt="活动配图" v-if="checkPath(activityData.pictureurl)"/>
+                  <img v-bind:src="activityData.pictureUrl" alt="活动配图" v-if="checkPath(activityData.pictureUrl)"/>
                   <img v-bind:src="global_.public_img" alt="活动配图" v-else>
                 </div>
               </Col>
@@ -117,10 +113,13 @@
     </Modal>
     <Modal v-model="editBaseModal" scrollable :width="900" :mask-closable="false">
       <div style="margin-bottom: 20px;">
-        <Button size="small" @click="turnto = 'base'">返回</Button>
-        <Button size="small" @click="getData()">刷新</Button>
+        <Button size="small" @click="editBaseModal = false">返回</Button>
+        <Button size="small" @click="refreshBaseForm">刷新</Button>
       </div>
       <BaseForm ref="baseForm" v-bind="$attrs" :actiId="activityData.id" />
+      <div slot="footer">
+        <Button type="info"  @click="close">关闭</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -164,12 +163,9 @@ export default {
   components:{
     ScoreSettingForm,SignupForm,BaseForm
   },
-  props: {
-    data:{
-      type:Object,
-      default:{}
-    } 
-  },
+  props: [
+    'data'
+  ],
   created(){
     this.getData();
   },
@@ -229,7 +225,7 @@ export default {
     },
     edit(){
       this.editBaseModal = true;
-      // this.detailActivityModel = false;
+      this.detailActivityModel = true;
     },
     signupDetail(){
       this.getSignupFormData(this.activityData.id);
@@ -293,14 +289,19 @@ export default {
       }
       if(reload) this.getData();
     },
-    // change (status) {
-    //   this.$Message.info('开关状态：' + status);
-    // },
+    refreshBaseForm(){
+      this.$refs.baseForm.getData();
+    }
   },
   watch:{
     detailActivityModel:function(newvalue,oldvalue){
       if(!newvalue){
         this.close();
+      }
+    },
+    editBaseForm:function(newvalue,oldvalue){
+      if(newvalue){
+        this.edit();
       }
     }
   },

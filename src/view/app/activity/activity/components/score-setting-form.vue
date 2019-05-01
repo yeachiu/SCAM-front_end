@@ -155,8 +155,6 @@
       },
       //提交更新
       async handleUpdate(){
-        console.log('要提交的数据：')
-        console.info(this.data)
         // let data = JSON.stringify(this.data);
         this.loading = true;
         try {
@@ -188,14 +186,10 @@
     mounted(){
       // 事件监听，提交数据给父组件
       this.$on("submitScoreData",() => {
-        console.log('score-setting-form提交数据:')
-        console.info(this.data)
         this.$emit("submitData",this.data);
       })
       // 事件监听，监听父组件刷新方法
       this.$on("refreshData",() => {
-        console.log('score-setting-form刷新数据:')
-        // console.info(this.data)
         this.getData();
       })
     }

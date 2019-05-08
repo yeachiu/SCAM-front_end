@@ -15,7 +15,7 @@
         </FormItem>
         <FormItem label="管理员">
           <Select v-model="data.apartAdmin" filterable remote :remote-method="findAllStudent" :loading="loading" :placeholder="data.adminName">
-            <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.className}} - {{option.realName}}</Option>
+            <Option v-for="(option, index) in options" :value="option.uid" :key="index">{{option.className}} - {{option.realName}}</Option>
           </Select>
         </FormItem>
         </Form>
@@ -122,7 +122,7 @@ export default {
       if (query !== '') {
         this.loading = true;
         try {
-          let res = await post('/system/user/auth/list/already/exmember')
+          let res = await post('/student/auth/list/already/exmember')
           this.lists = res.data;
         } catch (error) {
           this.$throw(error)

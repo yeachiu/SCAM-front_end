@@ -115,31 +115,49 @@
             title: '操作',
             key: 'action',
             align: 'center',
-            width:120,
+            width:150,
             render: (h, params) => {
-              return h('div', [
-                // h('Button', {
-                //   props: {type: 'primary',size: 'small'},
-                //   style: {marginRight: '5px'},
-                //   on:{
-                //     click:()=>{
-                //       this.openAddOrUpModal(params.row)
-                //     }
-                //   }
-                // }, '修改信息'),
-                h('Button', {
-                  props: {type: 'error',size: 'small'},
-                  on:{
-                    click:()=>{
-                      this.removeObject = {
-                        obj:params.row,
-                        index:params.index
+              if(params.row.status == 1){ //认证中
+                return h('div', [
+                  h('Button', {
+                    props: {type: 'primary',size: 'small'},
+                    style: {marginRight: '5px'},
+                    on:{
+                      click:()=>{
+                        this.openAddOrUpModal(params.row)
                       }
-                      this.removeModal = true;
                     }
-                  }
-                }, '删除')
-              ]);
+                  }, '审核'),
+                  h('Button', {
+                    props: {type: 'error',size: 'small'},
+                    on:{
+                      click:()=>{
+                        this.removeObject = {
+                          obj:params.row,
+                          index:params.index
+                        }
+                        this.removeModal = true;
+                      }
+                    }
+                  }, '删除')
+                ]);
+              }else{
+                return h('div', [
+                  h('Button', {
+                    props: {type: 'error',size: 'small'},
+                    on:{
+                      click:()=>{
+                        this.removeObject = {
+                          obj:params.row,
+                          index:params.index
+                        }
+                        this.removeModal = true;
+                      }
+                    }
+                  }, '删除')
+                ]);
+              }
+             
             }
           }
         ],
@@ -176,7 +194,7 @@
         }
         this.setting.loading = true;
         try {
-          let res = await post('/system/user/auth/remove/{id}',null,{
+          let res = await post('/student/auth/remove/{id}',null,{
             id: this.removeObject.obj.id
           })
           this.$Message.success("删除成功");
@@ -189,7 +207,7 @@
       async getData(){
         this.setting.loading = true;
         try {
-          let res = await post('/system/user/auth/list',{
+          let res = await post('/student/auth/list',{
             page:this.dataFilter.page,
             pageSize:this.dataFilter.pageSize
           })

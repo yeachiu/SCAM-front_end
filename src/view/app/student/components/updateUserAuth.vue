@@ -105,20 +105,20 @@ export default {
                         period: this.formData.period,
                         whatClass: this.formData.whatClass
                     }
-                    console.log('ok')
+                    // console.log('ok')
                     this.update(postObj)
                 // }
             }
         })
       },
       async update(data){
-          console.info(data)
+          // console.info(data)
         this.loading = true;
         try {
-            console.log('post')
+            // console.log('post')
             let res = await post('/app/group/exist',data)
             let bool = res.data;
-            console.info('bool'+bool)
+            // console.info('bool'+bool)
             if(bool){
                 let res = await post('/app/student/update/{id}',data,{
                     id:this.updateObject.id

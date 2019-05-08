@@ -12,6 +12,9 @@
               <Button type="info" @click="openAddOrUpModal(null)"><Icon type="md-add"></Icon>&nbsp;添加学生</Button>
               <Button :disabled="setting.loading" type="success" @click="getData"><Icon type="md-refresh"></Icon>&nbsp;刷新数据</Button>
               <Button type="primary" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>&nbsp;导出表格</Button>
+              <Upload action="" :before-upload="handleBeforeUpload" accept=".xls, .xlsx" style="display: inline-block;">
+                <Button icon="ios-cloud-upload-outline" :loading="uploadLoading" @click="handleUploadFile">导入文件</Button>
+              </Upload>
             </Col>
             <Col span="9">
               <Input v-model="search.value" placeholder="请输入您想要搜索的内容..." class="margin-bottom-10">
@@ -46,6 +49,7 @@
   import AddStudent from './components/add.vue'
   import UpdateStudent from './components/update.vue'
   import { post } from '@/libs/axios-cfg'
+  import excel from '@/libs/excel'
   export default {
     data () {
       return {
@@ -80,7 +84,7 @@
               return h('p',{},params.row.groupVO.period)
             }
           },
-          {title: '班级', sortable:true,
+          {title: '班级', sortable:true,width: 260,
             render: (h, params) => {
               return h('p',{},params.row.groupVO.className)
             }
@@ -88,7 +92,7 @@
           {
             title: '操作',
             key: 'action',
-            width: 260,
+            width: 160,
             align: 'center',
             render: (h, params) => {
               return h('div', [
@@ -123,7 +127,16 @@
             pageSize:10
         },
         removeObject:null,
-        allMember:null
+        allMember:null,
+        /** 上传EXCEL */
+        uploadLoading: false,
+        progressPercent: 0,
+        showProgress: false,
+        showRemoveFile: false,
+        file: null,
+        tableData: [],
+        tableTitle: [],
+        tableLoading: false
       }
     },
     components: {
@@ -189,14 +202,70 @@
         if(up) this.getData()
       },
       exportData(type){
-          if (type === 1) {
-              this.$refs.table.exportCsv({
-                  filename: '学生信息-'+new Date().getTime(),
-                  columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
-                  data: this.data
-              });
-          }
-      }
+        if (type === 1) {
+          this.$refs.table.exportCsv({
+            filename: '学生信息-'+new Date().getTime(),
+            columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
+            data: this.data
+          });
+        }
+      },
+      /** 上传EXCEL */
+      initUpload () {
+        this.file = null
+        this.showProgress = false
+        this.loadingProgress = 0
+        this.tableData = []
+        this.tableTitle = []
+      },
+      handleUploadFile () {
+        this.initUpload()
+      },
+      handleRemove () {
+        this.initUpload()
+        this.$Message.info('上传的文件已删除！')
+      },
+      handleBeforeUpload (file) {
+        alert("功能开发中……")
+        // const fileExt = file.name.split('.').pop().toLocaleLowerCase()
+        // if (fileExt === 'xlsx' || fileExt === 'xls') {
+        //   this.readFile(file)
+        //   this.file = file
+        // } else {
+        //   this.$Notice.warning({
+        //     title: '文件类型错误',
+        //     desc: '文件：' + file.name + '不是EXCEL文件，请选择后缀为.xlsx或者.xls的EXCEL文件。'
+        //   })
+        // }
+        // return false
+      },
+      // 读取文件
+      readFile (file) {
+        const reader = new FileReader()
+        reader.readAsArrayBuffer(file)
+        reader.onloadstart = e => {
+          this.uploadLoading = true
+          this.tableLoading = true
+          this.showProgress = true
+        }
+        reader.onprogress = e => {
+          this.progressPercent = Math.round(e.loaded / e.total * 100)
+        }
+        reader.onerror = e => {
+          this.$Message.error('文件读取出错')
+        }
+        reader.onload = e => {
+          this.$Message.info('文件读取成功')
+          const data = e.target.result
+          const { header, results } = excel.read(data, 'array')
+          const tableTitle = header.map(item => { return { title: item, key: item } })
+          this.tableData = results
+          this.tableTitle = tableTitle
+          this.uploadLoading = false
+          this.tableLoading = false
+          this.showRemoveFile = true
+        }
+      },
     }
   }
 </script>

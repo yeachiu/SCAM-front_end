@@ -79,7 +79,7 @@ export default [
         name: 'activity_checkin', component: () => import('@/view/app/activity/checkin/index.vue') 
       },
       { 
-        path: 'score',
+        path: 'score/:id',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '学分管理',

@@ -56,7 +56,7 @@ export default {
           this.formItem.members.push(element.uid);
         });
       }
-      console.info(allMember);
+      // console.info(allMember);
     },
     methods:{
       cancel(up=false){

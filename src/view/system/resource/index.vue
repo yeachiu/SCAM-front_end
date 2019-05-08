@@ -320,7 +320,7 @@
                     verification:parent==null ? 'true' : parent.verification==true?'true':'false',
                     color:'#19BE6B'
                 }
-                console.log(this.modal.data)
+                // console.log(this.modal.data)
                 this.modal.show = true;
             }
         }

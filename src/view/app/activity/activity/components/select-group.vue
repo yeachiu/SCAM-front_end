@@ -69,17 +69,17 @@ export default {
      */
     ok() {
       let nodes = this.$refs.tree.getCheckedNodes();
-      console.log(nodes);
+      // console.log(nodes);
       // 去除半选节点
       let removeNodes = new Array();
       nodes.forEach(ele => {
         let isfull = true; 
         if(ele.children != null){
-          console.log("ele:" + ele.title)
+          // console.log("ele:" + ele.title)
           // ele.children.forEach(kid => {
           for(let kid of ele.children){
             if(kid.checked == false){
-              console.log("kid:" + kid.title)
+              // console.log("kid:" + kid.title)
               isfull = false;
             }
             break;
@@ -89,7 +89,7 @@ export default {
           removeNodes.push(ele);
         }
       });
-      console.log(removeNodes);
+      // console.log(removeNodes);
       var set1 = new Set(removeNodes);
       var set2 = new Set(nodes);
       var subset = [];
@@ -98,7 +98,7 @@ export default {
           subset.push(item);
         }
       }
-      console.info(subset);
+      // console.info(subset);
       this.$emit('checkedNodes',nodes);
       this.$emit("cancel",false );
     }

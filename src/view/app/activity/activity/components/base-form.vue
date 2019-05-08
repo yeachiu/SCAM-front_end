@@ -36,7 +36,7 @@
       <FormItem label="描述" prop="description">
         <Input v-model="formItem.description" type="textarea" :autosize="{minRows: 3,maxRows: 5}" placeholder="Enter something..."></Input>
       </FormItem>
-      <FormItem label="描述" prop="address">
+      <FormItem label="地址" prop="address">
         <Input v-model="formItem.address" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="Enter something..."></Input>
       </FormItem>
       <FormItem label="报名时间" prop="datetimeSignup">
@@ -70,7 +70,7 @@
       </FormItem>
       <FormItem label="活动面向对象">
         <Button type="info" @click="selectGroupModal = true"><Icon type="md-add"></Icon>&nbsp;添加分组</Button>
-        <Tag v-for="item in formItem.groupId" :key="item.id" closable @on-close="handleClose">{{item.name}}</Tag>
+        <Tag v-for="item in formItem.groupId" :key="item.id" closable @on-close="handleClose">{{item.title}}</Tag>
       </FormItem>
     </Form>
     <SelectGroup v-if="selectGroupModal" :aparId="apartmentId" :checkeds="formItem.groupId" v-on:checkedNodes="getNodes" @cancel="onModalCancel"></SelectGroup>

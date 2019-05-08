@@ -53,7 +53,8 @@
     let ACT_STATUS_DRAFT = 1;   //草稿
     let ACT_STATUS_PUBLISH = 2;   //已发布
     let ACT_STATUS_PROCESS = 3;   //进行中
-    let ACT_STATUS_COMPLETE = 4;   //已结束
+    let ACT_STATUS_COMPLETE = 4;   //已完成
+    let ACT_STATUS_DONE = 5;
     let ACT_STATUS_CANCEL = 0;  //已取消
     export default {
       data () {
@@ -104,8 +105,9 @@
                 switch ( params.row.status){
                   case ACT_STATUS_PUBLISH : value = '已发布';break;
                   case ACT_STATUS_PROCESS : value = '进行中';break;
-                  case ACT_STATUS_COMPLETE : value = '已结束';break;
+                  case ACT_STATUS_COMPLETE : value = '已完成';break;
                   case ACT_STATUS_CANCEL : value = '已取消';break;
+                  case ACT_STATUS_DONE : value = '已结束';break;
                   case ACT_STATUS_DRAFT : value = '草稿';break;
                   default: value = 'error';
                 }
@@ -136,7 +138,29 @@
               render: (h, params) => {
                 let type,value,currentStatus;
                 switch ( params.row.status){
-                  case ACT_STATUS_PUBLISH || ACT_STATUS_PROCESS: //已发布to草稿，to取消，to编辑
+                  case ACT_STATUS_PUBLISH : //已发布to草稿，to取消，to编辑
+                    return h('div', [
+                      h('Button', {
+                        props: {type: 'primary',size: 'small'},
+                        style: {marginRight: '5px'},
+                        on:{
+                          click:()=>{
+                            this.openEditModal(params.row)
+                          }
+                        }
+                      }, '编辑'),
+                      h('Button', {
+                        props: {type: 'warning' ,size: 'small'},
+                        style: {marginRight: '5px'},
+                        on:{
+                          click:()=>{
+                            this.changeStatus(params.row,ACT_STATUS_CANCEL)
+                          }
+                        }
+                      },'取消'),
+                    ]);
+                    break;
+                  case ACT_STATUS_PROCESS: //已发布to草稿，to取消，to编辑
                     return h('div', [
                       h('Button', {
                         props: {type: 'primary',size: 'small'},
@@ -189,7 +213,28 @@
                       },'取消')
                     ]);
                     break;
-                  default: return;
+                  case  ACT_STATUS_COMPLETE:
+                    return h('div', [
+                      h('Button', {
+                        props: {type: 'warning' ,size: 'small'},
+                        style: {marginRight: '5px'},
+                        on:{
+                          click:()=>{
+                            this.changeStatus(params.row,ACT_STATUS_CANCEL)
+                          }
+                        }
+                      },'评奖'),
+                      h('Button', {
+                        props: {type: 'info' ,size: 'small'},
+                        style: {marginRight: '5px'},
+                        on:{
+                          click:()=>{
+                            this.changeStatus(params.row,ACT_STATUS_CANCEL)
+                          }
+                        }
+                      },'取消')
+                    ]);
+                    break;
                 }
               }
             }
@@ -297,19 +342,21 @@
          * @param type 窗口类型
          * @param reload 是否重新加载数据
          */
-        onModalCancel(type,reload = false){
+        onModalCancel(type,reload = flase){
           switch(type){
             case 'add':{
               this.addActivityModal = false;
+              this.getData();
             };break;
             case 'update':{
               this.updateActivityModal = false;
+              this.getData();
             };break;
             case 'detail':{
               this.detailActivityModel = false;
             };break;
           }
-          if(reload) this.getData();
+          // if(reload) this.getData();
         },
         reEditBaseForm(val){
           this.editBaseForm = val;
@@ -317,6 +364,11 @@
         refreshBaseForm(){
           this.$refs.baseForm.getData();
         }, 
+        linkToScore(actiId){
+          this.$router.push({
+            path: `score/${actiId}`,
+          })
+        },
         /**
          * @description 导出表格CSV
          */

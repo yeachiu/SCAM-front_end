@@ -53,7 +53,7 @@
                     <td><span class="tt"><Icon type="md-people"/>&nbsp;活动对象</span>&nbsp;</td>
                     <td>
                       <ul style="margin: 10px 15px;">
-                        <li class="aa" v-for="item in activityData.grouplimit" :key="item.id">{{item.name}}</li>
+                        <li class="aa" v-for="item in activityData.grouplimit" :key="item.id">{{item.title}}</li>
                       </ul>
                     </td>
                   </tr>
@@ -186,7 +186,7 @@ export default {
     },
     // 关闭本窗口
     close(){
-      this.$emit('cancel','detail');
+      this.$emit('cancel','detail',true);
     },
     // 时间数据处理
     dateformat(date){

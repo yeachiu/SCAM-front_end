@@ -100,11 +100,13 @@
             {
               title:'年级',
               key:'period',
-              sortable: true
+              sortable: true,
+              width: 80,
             },
             {
               title:'班级',
               key:'whatClass',
+              width: 80,
             },
             {
               title: '操作',
@@ -139,7 +141,7 @@
             try {
                 let res1 = await post('/app/group/list')
                 this.datas = res1.data;
-                console.info(res1.data)
+                // console.info(res1.data)
                 let res2 = await post('system/dictionary/list/{dictCode}',null,{
                   dictCode:'INSTITUTE'
                 })
@@ -214,7 +216,7 @@
             //   period:dayjs().year(),
             //   whatClass:0
             // }
-            console.log(this.modal.data)
+            // console.log(this.modal.data)
             this.modal.show = true;
         },
         handleEdit (row, index) {

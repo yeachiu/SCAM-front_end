@@ -88,7 +88,7 @@ export default {
      * @param reload 是否重新加载数据
      */
     cancel(reload = false) {
-      this.$emit("cancel", "add", reload);
+      this.$emit("cancel", "add", true);
     },
     next () {
       if (this.current == 2) {

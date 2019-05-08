@@ -87,7 +87,7 @@ export default {
                         name:this.formItem.name,
                         members:memlist
                     }
-                    console.info(postObj);
+                    // console.info(postObj);
                     this.update(postObj)
                 }
             }

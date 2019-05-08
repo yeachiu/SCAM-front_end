@@ -85,6 +85,7 @@
                     {
                         title: '跟进的活动',
                         key: 'activities', 
+                        width: 250,
                         render:(h,params)=>{
                             let activities = []
                             if(params.row.activities!=null && params.row.activities.length>0){
@@ -112,10 +113,10 @@
                     {
                         title: '操作',
                         key: 'action',
-                        width: 260,
+                        width: 100,
                         align: 'center',
                         render: (h, params) => {
-                            if(params.row.isadmin === 1){
+                            // if(params.row.isadmin == 1){
                                 return h('div', [
                                     // h('Button', {
                                     //     props: {type: 'primary',size: 'small'},
@@ -139,7 +140,7 @@
                                         }
                                     }, '删除')
                                 ]);
-                            }
+                            // }
                         }
                     }
                 ],

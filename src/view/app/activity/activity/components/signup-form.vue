@@ -44,8 +44,8 @@ export default {
       defaultRules:[
         { //活动ID
           type:"hidden",
-          field:"activityId", 
-          value:""
+          field:"checkin", 
+          value: false
         },
         { //自动补齐的字段
           type: "select",
@@ -58,6 +58,7 @@ export default {
             "placeholder": "请选择", 
             "not-found-text": "无匹配数据",
             "placement": "bottom", 
+            "filterable": true,
           }
         },
         { //自动补齐的字段
@@ -185,7 +186,7 @@ export default {
       // 1.获取当前用户信息，用于自动填充某些字段
 
       // 2.获取所有班级分组
-
+      this.getClassOptions();
       // 3.准备好数据
       this.isfirst = true;
       this.titles = [];
@@ -215,6 +216,24 @@ export default {
         });
         
       }
+    },
+    async getClassOptions(){
+      this.loading = true;
+        try {
+          let res = await post('/app/group/list/class')
+          // this.classOptions = res.data;
+          this.defaultRules[1].options = res.data.map(item => {
+            return {
+              value: item.id,
+              label: item.title,
+            };
+          });
+          // console.info(this.classOptions);
+          console.info(this.defaultRules[1].options)
+        } catch (error) {
+          this.$throw(error)
+        }
+      this.loading = true;
     },
     handleClose (event, name) {
         const index = this.titles.indexOf(name);

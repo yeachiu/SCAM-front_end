@@ -44,8 +44,8 @@ export default {
   },
   created(){
     this.getData();
-    console.log('score-detail:activityData:')
-    console.info(this.activityData)
+    // console.log('score-detail:activityData:')
+    // console.info(this.activityData)
   },
   methods: {
     async getData(){
@@ -61,15 +61,15 @@ export default {
     },
     // 更新活动学分设置数据
     async save(){
-      console.log('score-detail请求数据---')
+      // console.log('score-detail请求数据---')
       // 触发子组件的监听事件
       this.$refs.scoreForm.$emit("submitScoreData");
       this.show = false;
         
     },
     async submitAndSave(val) {
-      console.log('score-detail收到数据：')
-      console.info(val)
+      // console.log('score-detail收到数据：')
+      // console.info(val)
       let data = JSON.stringify(val);
       try {
         let res = post('app/activity/score/update/{id}',data,{

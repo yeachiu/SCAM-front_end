@@ -160,8 +160,8 @@
                 try {
                     let res = await post('/system/dictionary/list')
                     this.datas = res.data;
-                    console.log('dictionarylist')
-                    console.info(res.data);
+                    // console.log('dictionarylist')
+                    // console.info(res.data);
                 } catch (error) {
                     this.$throw(error)
                 }
@@ -257,7 +257,7 @@
                     sort:0,
                     remark:''
                 }
-                console.log(this.modal.data)
+                // console.log(this.modal.data)
                 this.modal.show = true;
             }
         }

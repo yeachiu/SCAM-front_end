@@ -221,15 +221,12 @@ export default {
       this.loading = true;
         try {
           let res = await post('/app/group/list/class')
-          // this.classOptions = res.data;
           this.defaultRules[1].options = res.data.map(item => {
             return {
-              value: item.id,
+              value: item.title,
               label: item.title,
             };
           });
-          // console.info(this.classOptions);
-          console.info(this.defaultRules[1].options)
         } catch (error) {
           this.$throw(error)
         }

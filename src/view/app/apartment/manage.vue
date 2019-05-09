@@ -130,7 +130,8 @@
         },
         removeObject:null,
         allMember:null,
-        isArray:true
+        isArray:true,
+        dataReady: true
       }
     },
     components: {
@@ -149,15 +150,18 @@
         this.getData();
       },
       async getAllMember(id){
+        this.loading = true;
         try {
           let res = await post('/app/apartment/member/list/{id}',null,{
             id:id
           })
           this.allMember = res.data;
           this.isArray = this.allMember instanceof Array;
+          this.dataReady = true;
         } catch (error) {
           this.$throw(error)
         }
+        this.loading = false;
       },
       async remove(){
         this.removeModal = false;
@@ -207,46 +211,48 @@
         if(up) this.getData()
       },
       async showAllMember(row){
+        this.dataReady = false;
         this.getAllMember(row.id);
-          let members = this.allMember;
-          if(members != null && this.isArray && members.length > 0){
-            this.$Modal.info({
-              title: row.name+' - 成员',
-              width:'40%',
-              render: (h)=>{
-                let ps = [];
-                members.forEach(element => {
-                  if(element.isadmin == 0){ //  部门管理员
-                    let r = h('Tag',{
-                      props:{
-                        color:'#f90',
-                        type:'dot',
-                      }
-                    },element.member.realName);
+        while(!this.dataReady){console.log(1111111)}
+        let members = this.allMember;
+        if(members != null && this.isArray && members.length > 0){
+          this.$Modal.info({
+            title: row.name+' - 成员',
+            width:'40%',
+            render: (h)=>{
+              let ps = [];
+              members.forEach(element => {
+                if(element.isadmin == 0){ //  部门管理员
+                  let r = h('Tag',{
+                    props:{
+                      color:'#f90',
+                      type:'dot',
+                    }
+                  },element.member.realName);
+                ps.push(r);
+                }else{
+                  let r = h('Tag',{
+                    props:{
+                      color:'#19be6b',
+                      type:'dot',
+                    }
+                  },element.member.realName);
                   ps.push(r);
-                  }else{
-                    let r = h('Tag',{
-                      props:{
-                        color:'#19be6b',
-                        type:'dot',
-                      }
-                    },element.member.realName);
-                    ps.push(r);
-                  }
-                  
-                });
-                return h('div',{
-                  style:{padding:'20px 0 10px 0'}
-                },ps);
-              }
-            });
-          }else{
-              this.$Notice.destroy()
-              this.$Notice.info({
-                  title:"该部门暂无成员信息",
-                  duration:3
-              })
-          }
+                }
+                
+              });
+              return h('div',{
+                style:{padding:'20px 0 10px 0'}
+              },ps);
+            }
+          });
+        }else{
+          this.$Notice.destroy()
+          this.$Notice.info({
+            title:"该部门暂无成员信息",
+            duration:3
+          })
+        }
       },
       exportData(type){
           if (type === 1) {

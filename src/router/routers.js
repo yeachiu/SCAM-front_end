@@ -48,7 +48,8 @@ export default [
     component: Main,
     meta: {
       title: '活动管理',
-      icon:'ios-cog'
+      icon:'ios-cog',
+      access: ['activity']
     },
     children:[
       { 
@@ -104,7 +105,8 @@ export default [
     component: Main,
     meta: {
       title: '学生信息管理',
-      icon:'ios-cog'
+      icon:'ios-cog',
+      access: ['student']
     },
     children:[
       { 
@@ -142,7 +144,8 @@ export default [
     component: Main,
     meta: {
       title: '部门管理',
-      icon:'ios-cog'
+      icon:'ios-cog',
+      access: ['apartment']
     },
     children:[
       { 
@@ -190,7 +193,8 @@ export default [
     component: Main,
     meta: {
       title: '系统设置',
-      icon:'ios-cog'
+      icon:'ios-cog',
+      access: ['system']
     },
     children:[
       { path: 'user',meta:{icon: 'md-people', title: '用户管理',access: ['system:user:list']}, name: 'system_user', component: () => import('@/view/system/user') },

@@ -80,7 +80,7 @@
           columns: [
             {
               title:'详情',
-              width:80,
+              width:60,
               render:(h,params)=>{
                 return h('Icon',{
                   props:{
@@ -99,7 +99,8 @@
             {title: '活动名称', key: 'title',sortable: true},
             {
               title: '状态',
-              key: 'status', 
+              key: 'status',
+              width:80, 
               render:(h,params)=>{
                 let value;
                 switch ( params.row.status){
@@ -123,6 +124,24 @@
               }
             },
             {
+              title: '报名时间',
+              key: 'signupTime',
+              width: 160,
+              render:(h,params)=>{
+                return h('span',dayjs(params.row.signupTime).format('YYYY-MM-DD HH:mm:ss') + ' / ' + dayjs(params.row.deadlineTime).format('YYYY-MM-DD HH:mm:ss'))
+              },
+              sortable: true
+            },
+            {
+              title: '活动时间',
+              key: 'activityTime',
+              width: 160,
+              render:(h,params)=>{
+                return h('span',dayjs(params.row.startTime).format('YYYY-MM-DD HH:mm:ss') + ' / ' + dayjs(params.row.endTime).format('YYYY-MM-DD HH:mm:ss'))
+              },
+              sortable: true
+            },
+            {
               title: '创建日期',
               key: 'createTime',
               render:(h,params)=>{
@@ -133,7 +152,7 @@
             {
               title: '操作',
               key: 'action',
-              width: 260,
+              width: 160,
               align: 'center',
               render: (h, params) => {
                 let type,value,currentStatus;
@@ -220,7 +239,7 @@
                         style: {marginRight: '5px'},
                         on:{
                           click:()=>{
-                            this.changeStatus(params.row,ACT_STATUS_CANCEL)
+                            this.linkToScore(params.row.id)
                           }
                         }
                       },'评奖'),

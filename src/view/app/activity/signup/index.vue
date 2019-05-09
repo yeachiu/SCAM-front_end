@@ -15,11 +15,13 @@
     </Row>
     <Row>
       <Col span="6">
-        <Menu theme="light" active-name="targetId">
+        <Menu theme="light" :active-name="targetId">
           <MenuGroup title="活动">
-            <MenuItem v-for="item in activities" :key="item.id" name="item.id">
-              <Icon type="ios-flag-outline" />
-              {{item.title}}
+            <MenuItem v-for="item in activities" :name="item.id" :key="item.id" >
+              <span @click="changeTargetId(item.id)">
+                <Icon type="ios-flag-outline" />
+                {{item.title}}
+              </span>
             </MenuItem>
           </MenuGroup>
         </Menu>
@@ -89,20 +91,23 @@
        * @description 获取列表
        */
       async getData(){
-          this.setting.loading = true;
-          try {
-            let res = await post('/app/activity/list/status',{
-              aparId: this.aparId,
-              status: ACT_STATUS_PUBLISH
-            })
-            this.activities = res.data;
-            if(this.activities != null){
-              this.targetId = this.activities[0].id;
-            }
-          } catch (error) {
-            this.$throw(error)
+        this.setting.loading = true;
+        try {
+          let res = await post('/app/activity/list/status',{
+            aparId: this.aparId,
+            status: ACT_STATUS_PUBLISH
+          })
+          this.activities = res.data;
+          if(this.activities != null){
+            this.targetId = this.activities[0].id;
           }
-          this.setting.loading = false;
+        } catch (error) {
+          this.$throw(error)
+        }
+        this.setting.loading = false;
+      },
+      changeTargetId(actiId){
+        this.targetId = actiId;
       },
       async getSignupData(){
         this.setting.loading = true;
@@ -111,6 +116,7 @@
               actiId : this.targetId
             })
             let data = res.data;
+            this.targetData = [];
             data.forEach(item => {
               this.targetData.push(JSON.parse(item))
             })
@@ -127,7 +133,7 @@
               id : this.targetId
             })
             this.targetRules = JSON.parse(res.data.rules);
-            // console.info(this.targetRules);
+            this.columns = [];
             this.targetRules.forEach(item => {
               if(item.type != "hidden"){
                 let col = {
@@ -148,9 +154,16 @@
        * @description 导出表格CSV
        */
       exportData(type){
+        let actiTitle = '活动《';
+        this.activities.forEach(item => {
+          if(item.id == this.targetId){
+            actiTitle = actiTitle + item.title;
+            return;
+          }
+        })
         if (type === 1) {
           this.$refs.table.exportCsv({
-            filename: '报名数据-'+new Date().getTime(),
+            filename: actiTitle + '》报名数据-' + new Date().getTime(),
             columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
             data: this.data
           });

@@ -15,7 +15,7 @@
         </FormItem>
         <FormItem label="管理员">
           <Select v-model="data.apartAdmin" filterable remote :remote-method="findAllStudent" :loading="loading" :placeholder="data.adminName">
-            <Option v-for="(option, index) in options" :value="option.uid" :key="index">{{option.className}} - {{option.realName}}</Option>
+            <Option v-for="option in options" :value="option.id" :key="option.id">{{option.className}} - {{option.realName}}</Option>
           </Select>
         </FormItem>
         </Form>
@@ -57,11 +57,12 @@ export default {
   created(){
     //   this.getApartmentInfo();
     if(this.updateObject != null){
-        this.data.id = this.updateObject.id;
-        this.data.name = this.updateObject.name;
-        this.data.about = this.updateObject.about;
-        // this.data.apartAdmin = this.updateObject.apartAdmin.id;
-        this.data.adminName = this.updateObject.apartAdmin.realName;
+      console.info(this.updateObject);
+      this.data.id = this.updateObject.id;
+      this.data.name = this.updateObject.name;
+      this.data.about = this.updateObject.about;
+      this.data.apartAdmin = '';
+      this.data.adminName = this.updateObject.apartAdmin.realName;
     }
   },
   methods: {
@@ -97,26 +98,27 @@ export default {
      * @description 确定按钮单击回调
      */
     ok() {
-        this.update(this.data)
+      this.update(this.data)
     },
     /**
      * @description 更新用户数据请求
      */
     async update(data){
-        this.loading = true;
-        if(data.apartAdmin == ''){
-            data.apartAdmin = this.updateObject.apartAdmin.id;
-        }
-        try {
-            let res = await post('/app/apartment/update/{id}',data,{
-                id:this.data.id
-            })
-            this.$Message.success("部门信息 "+data.name+" 更新成功");
-            this.cancel(true)
-        } catch (error) {
-            this.$throw(error)
-        }
-        this.loading = false;
+      console.info(data)
+      this.loading = true;
+      if(data.apartAdmin == ''){
+        data.apartAdmin = this.updateObject.apartAdmin.id;
+      }
+      try {
+        let res = await post('/app/apartment/update/{id}',data,{
+            id:this.data.id
+        })
+        this.$Message.success("部门信息 "+data.name+" 更新成功");
+        this.cancel(true)
+      } catch (error) {
+        this.$throw(error)
+      }
+      this.loading = false;
     },
     async  findAllStudent (query) {
       if (query !== '') {
@@ -132,7 +134,7 @@ export default {
           this.options = [];
           const list = this.lists.map(item => {
             return {
-              id: item.id,
+              id: item.uid,
               realName: item.realName,
               whatClass: item.whatClass,
               className:item.className

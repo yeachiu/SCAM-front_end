@@ -152,7 +152,7 @@
             {
               title: '操作',
               key: 'action',
-              width: 160,
+              width:200,
               align: 'center',
               render: (h, params) => {
                 let type,value,currentStatus;

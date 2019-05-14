@@ -8,7 +8,7 @@
         </FormItem>
         <FormItem label="成员" prop="uid">
           <Select v-model="data.uid" filterable remote :remote-method="findAllStudent" :loading="loading">
-            <Option v-for="(option, index) in options" :value="option.uid" :key="index">{{option.className}} - {{option.realName}}</Option>
+            <Option v-for="(option, index) in options" :value="option.id" :key="index">{{option.className}} - {{option.realName}}</Option>
           </Select>
         </FormItem>
       </Form>
@@ -96,7 +96,7 @@ export default {
           this.loading = false;
           const list = this.lists.map(item => {
              return {
-              id: item.id,
+              id: item.uid,
               realName: item.realName,
               whatClass: item.whatClass,
               className:item.className

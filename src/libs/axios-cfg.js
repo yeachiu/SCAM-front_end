@@ -26,7 +26,7 @@ axiosInstance.interceptors.request.use(function (config) {
 axiosInstance.interceptors.response.use(res => {
   iView.LoadingBar.finish()
   // -6表明身份异常或未登录
-  if (res.data.code === -6) {
+  if (res.data.status == -6) {
     store.commit('setToken', '')
     store.commit('setAccess', [])
     localStorage.clear()

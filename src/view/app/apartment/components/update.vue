@@ -57,7 +57,7 @@ export default {
   created(){
     //   this.getApartmentInfo();
     if(this.updateObject != null){
-      console.info(this.updateObject);
+      // console.info(this.updateObject);
       this.data.id = this.updateObject.id;
       this.data.name = this.updateObject.name;
       this.data.about = this.updateObject.about;
@@ -82,14 +82,14 @@ export default {
                 id:this.aparId
             })
             this.data = res.data.map(item => {
-            return {
-              id: item.id,
-              name: item.name,
-              about:item.about,
-              apartAdmin: item.apartAdmin.id,
-              adminName:item.apartAdmin.realName
-            };
-          });
+              return {
+                id: item.id,
+                name: item.name,
+                about:item.about,
+                apartAdmin: item.apartAdmin.uid,
+                adminName:item.apartAdmin.realName
+              };
+            });
         } catch (error) {
             this.$throw(error)
         }
@@ -107,7 +107,7 @@ export default {
       console.info(data)
       this.loading = true;
       if(data.apartAdmin == ''){
-        data.apartAdmin = this.updateObject.apartAdmin.id;
+        data.apartAdmin = this.updateObject.apartAdmin.uid;
       }
       try {
         let res = await post('/app/apartment/update/{id}',data,{

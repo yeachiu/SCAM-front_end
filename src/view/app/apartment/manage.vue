@@ -211,9 +211,8 @@
         if(up) this.getData()
       },
       async showAllMember(row){
-        this.dataReady = false;
+        // this.dataReady = false;
         this.getAllMember(row.id);
-        while(!this.dataReady){console.log(1111111)}
         let members = this.allMember;
         if(members != null && this.isArray && members.length > 0){
           this.$Modal.info({
@@ -259,7 +258,7 @@
               this.$refs.table.exportCsv({
                   filename: '部门数据-'+new Date().getTime(),
                   columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
-                  data: this.data
+                  data: this.data.records
               });
           }
       }

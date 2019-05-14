@@ -51,7 +51,7 @@ export default {
           break;
         case 'linktoclient':
           this.handleLogOut().then(() => {
-            window.location.href = "http://localhost:1005"
+            window.location.href = "http://localhost:1004"
           })
       }
     }

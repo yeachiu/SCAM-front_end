@@ -69,22 +69,22 @@
         columns: [
           {title: '学号', key: 'stuNum',sortable: true},
           {title: '姓名', key: 'realName',sortable: true},
-          {title: '学院', sortable:true,
+          {title: '学院', key: 'institute', sortable:true,
             render: (h, params) => {
               return h('p',{},params.row.groupVO.institute)
             }
           },
-          {title: '专业', sortable:true,
+          {title: '专业', key: 'profession', sortable:true,
             render: (h, params) => {
               return h('p',{},params.row.groupVO.profession)
             }
           },
-          {title: '年级', sortable:true,
+          {title: '年级', key: 'period', sortable:true,
             render: (h, params) => {
               return h('p',{},params.row.groupVO.period)
             }
           },
-          {title: '班级', sortable:true,width: 260,
+          {title: '班级', sortable:true,width: 260,key:'className',
             render: (h, params) => {
               return h('p',{},params.row.groupVO.className)
             }
@@ -202,11 +202,19 @@
         if(up) this.getData()
       },
       exportData(type){
+        let exportInfo = this.data.records;
+        exportInfo.forEach(ele => {
+          ele.stuNum = ele.stuNum + ' ';
+          ele.institute = ele.groupVO.institute;
+          ele.profession = ele.groupVO.profession;
+          ele.period = ele.groupVO.period;
+          ele.className = ele.groupVO.className;
+        });
         if (type === 1) {
           this.$refs.table.exportCsv({
             filename: '学生信息-'+new Date().getTime(),
-            columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
-            data: this.data
+            columns: this.columns.filter((col, index) => index > 0 && index < this.columns.length-2),
+            data: this.exportInfo
           });
         }
       },

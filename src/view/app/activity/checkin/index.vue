@@ -230,9 +230,16 @@
        * @description 导出表格CSV
        */
       exportData(type){
+        let actiTitle = '活动《';
+        this.activities.forEach(item => {
+          if(item.id == this.targetId){
+            actiTitle = actiTitle + item.title;
+            return;
+          }
+        })
         if (type === 1) {
           this.$refs.table.exportCsv({
-            filename: '报名数据-'+new Date().getTime(),
+            filename: actiTitle + '》报名数据-' + new Date().getTime(),
             columns: this.columns.filter((col, index) => index > 1 && index < this.columns.length-1),
             data: this.data
           });

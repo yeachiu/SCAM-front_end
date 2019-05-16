@@ -6,13 +6,17 @@ import store from '@/store'
 import { router } from '@/router/index'
 import config from '../config/index'
 
+// api请求路径
 const baseRequestUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
 
+// axios实例
 const axiosInstance = axios.create({
   baseURL: baseRequestUrl,
   timeout: 3000
   // withCredentials: true
 })
+
+// request拦截器
 axiosInstance.interceptors.request.use(function (config) {
   iView.LoadingBar.start()
   if (localStorage.getItem('csrf-token')) {
@@ -23,10 +27,11 @@ axiosInstance.interceptors.request.use(function (config) {
   iView.LoadingBar.finish()
   return Promise.reject(error)
 })
+// response拦截器
 axiosInstance.interceptors.response.use(res => {
   iView.LoadingBar.finish()
   // -6表明身份异常或未登录
-  if (res.data.status == -6) {
+  if (res.data.status === -6) {
     store.commit('setToken', '')
     store.commit('setAccess', [])
     localStorage.clear()

@@ -125,11 +125,11 @@
 </template>
 <script>
 import dayjs from 'dayjs'
-import global_   from  '@/view/global.vue'
+import global_   from  '@/view/common/global.vue'
 import { post , get } from '@/libs/axios-cfg'
-import BaseForm from '@/view/app/activity/activity/components/base-form.vue'
-import SignupForm from '@/view/app/activity/activity/components/signup-form.vue'
-import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
+import BaseForm from './base-form.vue'
+import SignupForm from './signup-form.vue'
+import ScoreSettingForm from './score-setting-form.vue'
 export default {
   data() {
     return {

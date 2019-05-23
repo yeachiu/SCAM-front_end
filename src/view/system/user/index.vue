@@ -46,7 +46,7 @@
 <script>
   import dayjs from 'dayjs'
   import { post } from '@/libs/axios-cfg'
-  import global_   from  '@/view/global.vue'
+  import global_   from  '@/view/common/global.vue'
   import AddUser from './components/add.vue'
   import UpdateUser from './components/update.vue'
   import ResetPassword from './components/reset-password.vue'

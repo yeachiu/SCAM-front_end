@@ -21,9 +21,9 @@
 </template>
 <script>
 import dayjs from 'dayjs'
-import global_   from  '@/view/global.vue'
+import global_   from  '@/view/common/global.vue'
 import { post , get } from '@/libs/axios-cfg'
-import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
+import ScoreSettingForm from '../components/score-setting-form.vue'
 export default {
   data() {
     return {

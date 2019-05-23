@@ -41,9 +41,9 @@
 import { post } from '@/libs/axios-cfg'
 import axios from 'axios';
 import qs from 'qs'
-import BaseForm from '@/view/app/activity/activity/components/base-form.vue'
-import SignupForm from '@/view/app/activity/activity/components/signup-form.vue'
-import ScoreSettingForm from '@/view/app/activity/activity/components/score-setting-form.vue'
+import BaseForm from './base-form.vue'
+import SignupForm from './signup-form.vue'
+import ScoreSettingForm from './score-setting-form.vue'
 export default {
   data () {
     return {

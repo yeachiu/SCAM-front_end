@@ -1,4 +1,5 @@
-import Main from '@/view/main'
+import AdminPage from '@/view/admin/layout'
+import ClientPage from '@/view/client/layout'
 
 /**
  * iview-admin中meta除了原生参数外可配置的参数:
@@ -11,6 +12,7 @@ import Main from '@/view/main'
  */
 
 export default [
+  // 登录
   {
     path: '/login',
     name: 'login',
@@ -20,11 +22,12 @@ export default [
     },
     component: () => import('@/view/login')
   },
+  // 前台
   {
     path: '/',
     name: '_home',
     redirect: '/home',
-    component: Main,
+    component: ClientPage,
     meta: {
       hideInMenu: true,
       notCache: true
@@ -38,14 +41,33 @@ export default [
           title: '首页',
           notCache: true
         },
-        component: () => import('@/view/home/index')
-      }
+        component: () => import('@/view/client/home/index.vue')
+      },
     ]
   },
+  
   {
-    path: '/app/activity',
+    path: '/c',
+    name: 'client',
+    component: ClientPage,
+    meta:{
+      hideInMenu: true,
+      icon:'ios-cog'
+    },
+    children:[
+      { path:'my', name:'my', meta: { icon: 'md-bookmarks',title: '我的资料',access: ['client:my'] }, component: () => import('@/view/client/my/index') },
+      { path:'credits', name:'credits', meta: { icon: 'md-bookmarks',title: '我的学分',access: ['client:credits'] }, component: () => import('@/view/client/credits/index') },
+      { path:'activities', name:'activities', meta: { icon: 'md-bookmarks',title: '我的活动',access: ['client:activities'] }, component: () => import('@/view/client/activity/index') },
+      { path:'auth',  name:'auth', meta: { icon: 'md-bookmarks',title: '学生认证',access: ['client:auth'] }, component: () => import('@/view/client/auth/index') },
+      { path:'detail/:id',  name:'detail', meta: { icon: 'md-bookmarks',title: '活动详情',access: ['client:detail'] }, component: () => import('@/view/client/activity/detail.vue') }
+    ]
+  },
+  // 后台
+  {
+    path: '/admin',
+    redirect: '/admin/activity',
     name: 'act',
-    component: Main,
+    component: AdminPage,
     meta: {
       title: '活动管理',
       icon:'ios-cog',
@@ -53,56 +75,61 @@ export default [
     },
     children:[
       { 
-        path: 'manage',
+        path: 'activity',
+        name: 'activity_manage',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '活动管理',
           access: ['activity:list']
         }, 
-        name: 'activity_manage', component: () => import('@/view/app/activity/activity/manage.vue') 
+        component: () => import('@/view/admin/activity/acti/manage.vue') 
       },
       { 
         path: 'signup',
+        name: 'activity_signup',
         meta:{
           icon: 'ios-contacts-outline', 
           title: '报名管理',
           access: ['activity:signup']
         }, 
-        name: 'activity_signup', component: () => import('@/view/app/activity/signup/index.vue') 
+        component: () => import('@/view/admin/activity/signup/index.vue') 
       },
       { 
         path: 'checkin',
+        name: 'activity_checkin', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '签到管理',
           access: ['activity:checkin']
         }, 
-        name: 'activity_checkin', component: () => import('@/view/app/activity/checkin/index.vue') 
+        component: () => import('@/view/admin/activity/checkin/index.vue') 
       },
       { 
         path: 'score/:id',
+        name: 'activity_score', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '学分管理',
           access: ['activity:score']
         }, 
-        name: 'activity_score', component: () => import('@/view/app/activity/score/index.vue') 
+        component: () => import('@/view/admin/activity/score/index.vue') 
       },
       { 
         path: 'cancel',
+        name: 'activity_cancel', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '回收站',
           access: ['activity:list']
         }, 
-        name: 'activity_cancel', component: () => import('@/view/app/activity/activity/cancel.vue') 
+        component: () => import('@/view/admin/activity/acti/cancel.vue') 
       }
     ]
   },
   {
-    path: '/app/student',
+    path: '/admin/student',
     name: 'stu',
-    component: Main,
+    component: AdminPage,
     meta: {
       title: '学生信息管理',
       icon:'ios-cog',
@@ -110,38 +137,41 @@ export default [
     },
     children:[
       { 
-        path: 'manage',
+        path: '/',
+        name: 'student_manage', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '学生管理',
           access: ['student:manage']
         }, 
-        name: 'student_manage', component: () => import('@/view/app/student/index.vue') 
+        component: () => import('@/view/admin/student/index.vue') 
       },
       { 
         path: 'group',
+        name: 'student_group', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '分组管理',
           access: ['student:group']
         }, 
-        name: 'student_group', component: () => import('@/view/app/student/group.vue') 
+        component: () => import('@/view/admin/student/group.vue') 
       },
       { 
         path: 'auth',
+        name: 'student_auth', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '学生认证',
           access: ['student:auth']
         }, 
-        name: 'student_auth', component: () => import('@/view/app/student/auth.vue') 
+        component: () => import('@/view/admin/student/auth.vue') 
       }
     ]
   },
   {
-    path: '/app/apartment',
+    path: '/admin/apartment',
     name: 'apar',
-    component: Main,
+    component: AdminPage,
     meta: {
       title: '部门管理',
       icon:'ios-cog',
@@ -149,40 +179,44 @@ export default [
     },
     children:[
       { 
-        path: '/index',
+        path: 'index',
+        name: 'apartment_index', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '部门主页',
           access: ['apartment:index']
         }, 
-        name: 'apartment_index', component: () => import('@/view/app/apartment/index.vue') 
+        component: () => import('@/view/admin/apartment/index.vue') 
       },
       { 
-        path: '/manage',
+        path: '/',
+        name: 'apartment_manage', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '部门管理',
           access: ['apartment:manage']
         }, 
-        name: 'apartment_manage', component: () => import('@/view/app/apartment/manage.vue') 
+        component: () => import('@/view/admin/apartment/manage.vue') 
       },
       { 
         path: 'member',
+        name: 'apartment_member', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '成员管理',
           access: ['apartment:member']
         }, 
-        name: 'apartment_member', component: () => import('@/view/app/apartment/member.vue') 
+        component: () => import('@/view/admin/apartment/member.vue') 
       },
       { 
         path: 'group',
+        name: 'apartment_group', 
         meta:{
           icon: 'ios-contacts-outline', 
           title: '分组管理',
           access: ['apartment:group']
         }, 
-        name: 'apartment_group', component: () => import('@/view/app/apartment/group.vue') 
+        component: () => import('@/view/admin/apartment/group.vue') 
       }
       
     ]
@@ -190,18 +224,18 @@ export default [
   {
     path: '/system',
     name: 'doc',
-    component: Main,
+    component: AdminPage,
     meta: {
       title: '系统设置',
       icon:'ios-cog',
       access: ['system']
     },
     children:[
-      { path: 'user',meta:{icon: 'md-people', title: '用户管理',access: ['system:user:list']}, name: 'system_user', component: () => import('@/view/system/user') },
+      { path: 'user',meta:{icon: 'md-people', title: '用户管理',access: ['system:user:list']}, name: 'system_user', component: () => import('@/view/admin/system/user') },
       { path: 'person-stalker',meta:{icon: 'md-body',title: '角色管理',}, name: 'system_role', component: () => import('@/view/system/role') },
-      { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/system/resource') },
+      { path: 'resource',meta:{icon: 'ios-lock',title: '资源管理',access: ['system:resource:list']}, name: 'system_resource', component: () => import('@/view/admin/system/resource') },
       { path: 'log',meta:{icon: 'ios-aperture',title: '系统日志',access: ['system:log:list']}, name: 'system_log', component: () => import('@/view/system/log') },
-      { path: 'dictionary',meta:{icon: 'md-bookmarks',title: '字典定义',access: ['system:dictionary:list']}, name: 'system_dictionary', component: () => import('@/view/system/dictionary') },      
+      { path: 'dictionary',meta:{icon: 'md-bookmarks',title: '字典定义',access: ['system:dictionary:list']}, name: 'system_dictionary', component: () => import('@/view/admin/system/dictionary') },      
     ]
   },
   {
@@ -210,7 +244,7 @@ export default [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/401.vue')
+    component: () => import('@/view/common/error-page/401.vue')
   },
   {
     path: '/500',
@@ -218,7 +252,7 @@ export default [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/500.vue')
+    component: () => import('@/view/common/error-page/500.vue')
   },
   {
     path: '*',
@@ -226,6 +260,6 @@ export default [
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/404.vue')
+    component: () => import('@/view/common/error-page/404.vue')
   }
 ]

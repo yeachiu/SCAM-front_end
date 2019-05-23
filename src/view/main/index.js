@@ -1,2 +1,2 @@
-import Main from './main.vue'
-export default Main
+import AdminPage from './main.vue'
+export default AdminPage

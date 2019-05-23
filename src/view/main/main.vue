@@ -31,10 +31,7 @@
     </Layout>
   </Layout>
 </template>
-<style lang="less">
-@import "../../assets/styles/common.less";
-</style>
-<script>
+import "@/assets/styles/common.less"
 import SideMenu from './components/side-menu'
 import HeaderBar from './components/header-bar'
 import TagsNav from './components/tags-nav'

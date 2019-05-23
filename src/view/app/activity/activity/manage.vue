@@ -48,7 +48,7 @@
     import AddActivity from './components/add.vue'
     import UpdateActivity from './components/update.vue'
     import DetailActivity from './components/detail.vue'
-    import BaseForm from '@/view/app/activity/activity/components/base-form.vue'
+    import BaseForm from './components/base-form.vue'
     /** 活动状态 **/
     let ACT_STATUS_DRAFT = 1;   //草稿
     let ACT_STATUS_PUBLISH = 2;   //已发布

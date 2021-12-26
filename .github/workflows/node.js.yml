@@ -25,6 +25,6 @@ jobs:
       uses: JamesIves/github-pages-deploy-action@4.1.7
       with:
         ACCESS_TOKEN: ${{ secrets.accessToken }}
-        BRANCH: master
+        BRANCH: scam-pages
         FOLDER: dist
         BUILD_SCRIPT: npm install && npm run build

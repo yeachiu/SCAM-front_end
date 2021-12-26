@@ -21,4 +21,10 @@ jobs:
     - run: |
         npm install
         npm run build --if-present
-        npm test
+    - name: Deploy
+      uses: yeachiu/github-pages-deploy-action@releases/v3
+      with:
+        ACCESS_TOKEN: ${{ secrets.accessToken }}
+        BRANCH: master
+        FOLDER: dist
+        BUILD_SCRIPT: npm install && npm run build

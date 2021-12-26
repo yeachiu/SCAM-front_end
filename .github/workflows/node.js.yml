@@ -22,7 +22,7 @@ jobs:
         npm install
         npm run build --if-present
     - name: Deploy
-      uses: yeachiu/SCAM-front_end@master
+      uses: JamesIves/github-pages-deploy-action@4.1.7
       with:
         ACCESS_TOKEN: ${{ secrets.accessToken }}
         BRANCH: master

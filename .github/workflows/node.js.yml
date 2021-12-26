@@ -22,7 +22,7 @@ jobs:
         npm install
         npm run build --if-present
     - name: Deploy
-      uses: yeachiu/github-pages-deploy-action@releases/v3
+      uses: yeachiu/SCAM-front_end@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.accessToken }}
         BRANCH: master
